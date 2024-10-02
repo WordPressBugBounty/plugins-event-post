@@ -1,0 +1,22 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "eventpost/details",
+  "version": "5.9.6",
+  "title": "Events Details",
+  "category": "common",
+  "icon": "calendar",
+  "description": "Details of an event",
+  "supports": {
+    "html": false
+  },
+  "attributes": {
+    "attribute": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "textdomain": "eventpost",
+  "style": "file:./block-details.scss",
+  "editorScript": "file:./index.js"
+}

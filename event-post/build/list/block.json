@@ -1,0 +1,69 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "eventpost/list",
+  "version": "5.9.6",
+  "title": "Events List",
+  "category": "common",
+  "icon": "calendar",
+  "description": "List of events",
+  "supports": {
+    "html": false
+  },
+  "attributes": {
+    "nb": {
+      "type": "number"
+    },
+    "future": {
+      "type": "boolean"
+    },
+    "past": {
+      "type": "boolean"
+    },
+    "cat": {
+      "type": "string"
+    },
+    "tag": {
+      "type": "string"
+    },
+    "geo": {
+      "type": "boolean"
+    },
+    "orderby": {
+      "type": "string"
+    },
+    "order": {
+      "type": "string"
+    },
+    "blogs": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "before_title": {
+      "type": "string"
+    },
+    "after_title": {
+      "type": "string"
+    },
+    "style": {
+      "type": "string"
+    },
+    "thumbnail": {
+      "type": "boolean"
+    },
+    "thumbnail_size": {
+      "type": "string"
+    },
+    "excerpt": {
+      "type": "boolean"
+    },
+    "pages": {
+      "type": "boolean"
+    }
+  },
+  "textdomain": "eventpost",
+  "style": "file:./block-list.scss",
+  "editorScript": "file:./index.js"
+}

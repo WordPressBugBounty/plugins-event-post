@@ -1,0 +1,92 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "eventpost/map",
+  "version": "5.9.6",
+  "title": "Events Map",
+  "category": "widgets",
+  "icon": "location-alt",
+  "description": "Map of events",
+  "supports": {
+    "html": false
+  },
+  "attributes": {
+    "nb": {
+      "type": "number"
+    },
+    "future": {
+      "type": "boolean"
+    },
+    "past": {
+      "type": "boolean"
+    },
+    "cat": {
+      "type": "string"
+    },
+    "tag": {
+      "type": "string"
+    },
+    "orderby": {
+      "type": "string"
+    },
+    "order": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "before_title": {
+      "type": "string"
+    },
+    "after_title": {
+      "type": "string"
+    },
+    "style": {
+      "type": "string"
+    },
+    "thumbnail": {
+      "type": "boolean"
+    },
+    "thumbnail_size": {
+      "type": "string"
+    },
+    "excerpt": {
+      "type": "boolean"
+    },
+    "pop_element_schema": {
+      "type": "boolean"
+    },
+    "htmlPop_element_schema": {
+      "type": "string"
+    },
+    "zoom": {
+      "type": "string"
+    },
+    "tile": {
+      "type": "string"
+    },
+    "width": {
+      "type": "string"
+    },
+    "height": {
+      "type": "string"
+    },
+    "list": {
+      "type": "string"
+    },
+    "map_position": {
+      "type": "boolean"
+    },
+    "latitude": {
+      "type": "string"
+    },
+    "longitude": {
+      "type": "string"
+    }
+  },
+  "textdomain": "eventpost",
+  "style": "file:./event-map.css",
+  "script": "file:./event-map.js",
+  "editorStyle": "file:./index.css",
+  "editorScript": "file:./index.js"
+}

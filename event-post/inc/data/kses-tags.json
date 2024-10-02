@@ -1,0 +1,128 @@
+{
+    "a": {
+        "class": [],
+        "href": [],
+        "title": [],
+        "target": []
+    },
+    "button": {
+        "class": [],
+        "data-date": [],
+        "id": [],
+        "title": [],
+        "tabindex": [],
+        "style": []
+    },
+    "i": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "em": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "b": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "strong": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "div": {
+        "data-nb": [],
+        "data-filter": [],
+        "data-tile": [],
+        "data-width": [],
+        "data-height": [],
+        "data-zoom": [],
+        "data-map_position": [],
+        "data-latitude": [],
+        "data-longitude": [],
+        "data-pop_element_schema": [],
+        "data-htmlPop_element_schema": [],
+        "data-list": [],
+        "data-disabled-interactions": [],
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "span": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "img": {
+        "alt": [],
+        "height": [],
+        "src": [],
+        "width": []
+    },
+    "li": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "ol": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "ul": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "p": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "caption": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "table": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "td": {
+        "colspan": [],
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "th": {
+        "scope": [],
+        "colspan": [],
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "tr": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "tbody": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "thead": {
+        "class": [],
+        "id": [],
+        "style": []
+    },
+    "tfoot": {
+        "class": [],
+        "id": [],
+        "style": []
+    }
+}

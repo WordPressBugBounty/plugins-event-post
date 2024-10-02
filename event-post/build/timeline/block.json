@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "eventpost/timeline",
+  "version": "5.9.6",
+  "title": "Events Timeline",
+  "icon": "arrow-right-alt",
+  "category": "common",
+  "attributes": {
+    "nb": {
+      "type": "number",
+      "default": 0
+    },
+    "future": {
+      "type": "boolean"
+    },
+    "past": {
+      "type": "boolean"
+    },
+    "cat": {
+      "type": "string"
+    },
+    "tag": {
+      "type": "string"
+    },
+    "geo": {
+      "type": "boolean"
+    },
+    "blogs": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "before_title": {
+      "type": "string"
+    },
+    "after_title": {
+      "type": "string"
+    },
+    "style": {
+      "type": "string"
+    },
+    "excerpt": {
+      "type": "boolean"
+    }
+  },
+  "textdomain": "eventpost",
+  "script": "file:./event-timeline.js",
+  "style": "file:./event-timeline.css",
+  "editorScript": "file:./index.js"
+}
