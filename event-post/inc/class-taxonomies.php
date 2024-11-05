@@ -3,7 +3,7 @@
  * Taxonomies
  * 
  * @package event-post
- * @version 5.9.6
+ * @version 5.9.7
  * @since   5.6
  */
 

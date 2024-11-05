@@ -3,7 +3,7 @@
  * Implements all shortcodes features
  *
  * @package event-post
- * @version 5.9.6
+ * @version 5.9.7
  * @since   5.0.0
  */
 
@@ -330,7 +330,23 @@ class Shortcodes{
             'className' => esc_attr($atts['className']),
         );
         extract($atts);
-        return '<div class="eventpost_calendar '.$className.'" data-tax_name="' . $tax_name . '" data-tax_term="' . $tax_term . '" data-cat="' . $cat . '" data-date="' . $date . '" data-mf="' . $mondayfirst . '" data-dp="' . $datepicker . '" data-title="'. $display_title .'">' . wp_kses($this->EP->calendar($atts), $this->EP->kses_tags) . '</div>';
+        // $date can only be a string passed to strtotime, eg: Y-n, - 1 month, +2 weeks, etc...
+        // So we only allow digits, letters, spaces, and the characters - and +
+        if (preg_match('/[^a-zA-Z0-9\-\+ ]/', $date)) {
+            $date = date('Y-n');
+        }
+        return '<div
+                    class="eventpost_calendar ' . esc_attr($className) . '"
+                    data-tax_name="' . esc_attr($tax_name) . '"
+                    data-tax_term="' . esc_attr($tax_term) . '"
+                    data-cat="' . esc_attr($cat) . '"
+                    data-date="' . esc_attr($date) . '"
+                    data-mf="' . esc_attr($mondayfirst) . '"
+                    data-dp="' . esc_attr($datepicker) . '"
+                    data-title="'. esc_attr($display_title) .'"
+                >'
+            . wp_kses_post($this->EP->calendar($atts))
+        . '</div>';
     }
 
     /**

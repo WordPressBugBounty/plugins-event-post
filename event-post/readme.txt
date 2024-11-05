@@ -3,8 +3,8 @@ Contributors: bastho, leroysabrina, unecologeek, agencenous
 Donate link: https://apps.avecnous.eu/en/product/eventpost/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=donate  
 Tags: calendar, events, booking, map, geolocation  
 Requires at least: 6.3  
-Tested up to: 6.6  
-Stable tag: 5.9.6   
+Tested up to: 6.7  
+Stable tag: 5.9.7   
 Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=author  
 License: GPLv2  
 License URI: https://www.gnu.org/licenses/gpl-2.0.html  
@@ -237,6 +237,11 @@ You can also subscribe to paid plan, I don't care.
 3. Editor interface for event data
 4. Editor interface for location data
 ## Changelog
+
+### 5.9.7
+
+- Security: Fix vulnerability to XSS in `[events_cal]` shortcode
+- Ensure that date is well formated in `[events_cal]` shortcode
 
 ### 5.9.6
 
