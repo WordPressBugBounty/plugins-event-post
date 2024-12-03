@@ -4,7 +4,7 @@ Donate link: https://apps.avecnous.eu/en/product/eventpost/?mtm_campaign=wp-plug
 Tags: calendar, events, booking, map, geolocation  
 Requires at least: 6.3  
 Tested up to: 6.7  
-Stable tag: 5.9.7   
+Stable tag: 5.9.8    
 Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=author  
 License: GPLv2  
 License URI: https://www.gnu.org/licenses/gpl-2.0.html  
@@ -214,6 +214,9 @@ example:
 
 ## Frequently asked questions
 
+### How can I report security bugs?
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/wordpress/plugin/event-post/vdp)
+
 ### Is the plugin free ?
 Yes, and it uses only open-sources : openstreetmap, openlayer, jquery
 
@@ -238,9 +241,13 @@ You can also subscribe to paid plan, I don't care.
 4. Editor interface for location data
 ## Changelog
 
+### 5.9.8
+
+- Security: Fix Cross Site Scripting, reported by Peter Thaleikis
+
 ### 5.9.7
 
-- Security: Fix vulnerability to XSS in `[events_cal]` shortcode
+- Security: Fix vulnerability to XSS in `[events_cal]` shortcode (reported by Peter Thaleikis)
 - Ensure that date is well formated in `[events_cal]` shortcode
 
 ### 5.9.6

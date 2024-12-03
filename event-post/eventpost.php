@@ -3,7 +3,7 @@
  * Plugin Name: Event Post
  * Plugin URI: https://event-post.com?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=plugin-uri
  * Description: Add calendar and/or geolocation metadata on any posts.
- * Version: 5.9.7
+ * Version: 5.9.8
  * Author: N.O.U.S. Open Useful and Simple
  * Contributors: bastho, sabrinaleroy, unecologeek, agencenous
  * Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=author
@@ -1737,20 +1737,20 @@ class EventPost {
 				if($width==''){
 					$width = '100%';
 				}
-				$attributes .= ' 	data-tile="'.$tile.'"
-									data-width="'.$width.'"
-									data-height="'.$height.'"
-									data-zoom="'.$zoom.'"
-									data-map_position="'.$map_position.'"
-									data-latitude="'.$latitude.'"
-									data-longitude="'.$longitude.'"
-									data-pop_element_schema="'.$pop_element_schema.'"
+				$attributes .= ' 	data-tile="'.esc_attr($tile).'"
+									data-width="'.esc_attr($width).'"
+									data-height="'.esc_attr($height).'"
+									data-zoom="'.esc_attr($zoom).'"
+									data-map_position="'.esc_attr($map_position).'"
+									data-latitude="'.esc_attr($latitude).'"
+									data-longitude="'.esc_attr($longitude).'"
+									data-pop_element_schema="'.esc_attr($pop_element_schema).'"
 									data-htmlPop_element_schema="'.esc_attr($htmlPop_element_schema).'"
-									data-list="'.$list.'"
+									data-list="'.esc_attr($list).'"
 									data-disabled-interactions="';
 				// add data-position avec ma variables
 				foreach($this->map_interactions as $int_key=>$int_name){
-					$attributes.=$atts[$int_key]==false ? $int_key.', ' : '';
+					$attributes.=$atts[$int_key]==false ? esc_attr($int_key).', ' : '';
 				}
 				$attributes.='" ';
 			}
@@ -1786,9 +1786,9 @@ class EventPost {
 						), array(
 					$type,
 					$id,
-					$class.($className ? ' '.$className : '').($id == 'event_geolist' && $list ? ' has-list list-'.$list : ' no-list'),
+					$class.($className ? ' '.esc_attr($className) : '').($id == 'event_geolist' && $list ? ' has-list list-'.esc_attr($list) : ' no-list'),
 					$id . $this->list_id,
-					(!empty($width) ? 'width:' . $width . ';' : '') . (!empty($height) ? 'height:' . $height . ';' : '') . $style,
+					(!empty($width) ? 'width:' . esc_attr($width) . ';' : '') . (!empty($height) ? 'height:' . esc_attr($height) . ';' : '') . esc_attr($style),
 					$attributes,
 					$html,
 					$pagination,
