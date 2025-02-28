@@ -1,0 +1,10 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "eventpost/front",
+  "version": "5.9.3",
+  "title": "Event-post front",
+  "textdomain": "eventpost",
+  "style": "file:./front.scss",
+  "script": "file:./front.js"
+}

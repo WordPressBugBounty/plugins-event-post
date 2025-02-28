@@ -1,0 +1,11 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "eventpost/admin",
+  "version": "5.9.3",
+  "title": "Event-post admin",
+  "textdomain": "eventpost",
+  "style": "file:./admin.scss",
+  "script": "file:./admin.js",
+  "editorScript": "file:./inline-edit.js"
+}

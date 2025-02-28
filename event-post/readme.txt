@@ -4,7 +4,7 @@ Donate link: https://apps.avecnous.eu/en/product/eventpost/?mtm_campaign=wp-plug
 Tags: calendar, events, booking, map, geolocation  
 Requires at least: 6.3  
 Tested up to: 6.7  
-Stable tag: 5.9.8    
+Stable tag: 5.9.9    
 Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=author  
 License: GPLv2  
 License URI: https://www.gnu.org/licenses/gpl-2.0.html  
@@ -240,6 +240,10 @@ You can also subscribe to paid plan, I don't care.
 3. Editor interface for event data
 4. Editor interface for location data
 ## Changelog
+
+### 5.9.9
+
+- Security: Sanitize GPS coordinates, fixes Cross Site Scripting, reported by preo
 
 ### 5.9.8
 

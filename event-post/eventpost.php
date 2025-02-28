@@ -3,7 +3,7 @@
  * Plugin Name: Event Post
  * Plugin URI: https://event-post.com?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=plugin-uri
  * Description: Add calendar and/or geolocation metadata on any posts.
- * Version: 5.9.8
+ * Version: 5.9.9
  * Author: N.O.U.S. Open Useful and Simple
  * Contributors: bastho, sabrinaleroy, unecologeek, agencenous
  * Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=author
@@ -1107,6 +1107,20 @@ class EventPost {
 	}
 
 	/**
+	 * Sanitize a coordinate string
+	 * Only keeps, numbers, dots and commas
+	 * 
+	 * @param string $str
+	 * 
+	 * @since 5.9.9
+	 * 
+	 * @return string
+	 */
+	public function sanitize_coordinate($str){
+		return preg_replace('/[^0-9\.,-]/', '', $str);
+	}
+
+	/**
 	 * Format a date for humans
 	 * 
 	 * @param mixed $date
@@ -1329,23 +1343,23 @@ class EventPost {
 				$location.="\t\t\t\t".'<address';
 				if ($lat != '' && $long != '') {
 					$location.=' 	data-id="' . $post->ID . '"
-												data-latitude="' . $lat . '"
-												data-longitude="' . $long . '"
-												data-marker="' . $this->get_marker($color) . '"
-												data-iconcode="' .$icon. '"
-												data-icon="' . mb_convert_encoding('&#x'.$icon.';', 'UTF-8', 'HTML-ENTITIES'). '"
-												data-color="#' . $color. '"';
+												data-latitude="' . esc_attr($lat) . '"
+												data-longitude="' . esc_attr($long) . '"
+												data-marker="' . esc_attr($this->get_marker($color)) . '"
+												data-iconcode="' .esc_attr($icon). '"
+												data-icon="' . esc_attr(mb_convert_encoding('&#x'.$icon.';', 'UTF-8', 'HTML-ENTITIES')). '"
+												data-color="#' . esc_attr($color). '"';
 				}
 				$location.=' itemprop="adr" class="eventpost-address">'
 						. "\n\t\t\t\t\t\t\t".'<span>'
 						. "\n".$address
 						. "\n\t\t\t\t\t\t\t". '</span>';
 				if ($context=='single' && $lat != '' && $long != '') {
-					$location.="\n\t\t\t\t\t\t\t".'<a class="event_link gps dashicons-before dashicons-location-alt" href="https://www.openstreetmap.org/?lat=' . $lat .'&amp;lon=' . $long . '&amp;zoom=13" target="_blank"  itemprop="geo">' . __('Map', 'event-post') . '</a>';
+					$location.="\n\t\t\t\t\t\t\t".'<a class="event_link gps dashicons-before dashicons-location-alt" href="https://www.openstreetmap.org/?lat=' . esc_attr($lat) .'&amp;lon=' . esc_attr($long) . '&amp;zoom=13" target="_blank"  itemprop="geo">' . __('Map', 'event-post') . '</a>';
 				}
 				$location.="\n\t\t\t\t\t\t".'</address>';
 				if (wp_is_mobile() && $lat != '' && $long != '') {
-					$location.="\n\t\t\t\t\t\t".'<a class="event_link gps-geo-link" href="geo:' . $lat . ',' . $long . '" target="_blank"  itemprop="geo"><i class="dashicons-before dashicons-location"></i> ' . __('Open in app', 'event-post') . '</a>';
+					$location.="\n\t\t\t\t\t\t".'<a class="event_link gps-geo-link" href="geo:' . esc_attr($lat) . ',' . esc_attr($long) . '" target="_blank"  itemprop="geo"><i class="dashicons-before dashicons-location"></i> ' . __('Open in app', 'event-post') . '</a>';
 				}
 			}
 		}
@@ -2100,8 +2114,8 @@ class EventPost {
 		$ob->virtual_location = get_post_meta($ob->ID, $this->META_VIRTUAL_LOCATION, true);
 		$ob->virtual_location = esc_url($ob->virtual_location);
 		$ob->address = get_post_meta($ob->ID, $this->META_ADD, true);
-		$ob->lat = get_post_meta($ob->ID, $this->META_LAT, true);
-		$ob->long = get_post_meta($ob->ID, $this->META_LONG, true);
+		$ob->lat = $this->sanitize_coordinate(get_post_meta($ob->ID, $this->META_LAT, true));
+		$ob->long = $this->sanitize_coordinate(get_post_meta($ob->ID, $this->META_LONG, true));
 		$ob->attendance_mode = (null != $att_mod = get_post_meta($ob->ID, $this->META_ATTENDANCE_MODE, true)) ? $att_mod : array_keys($this->attendance_modes)[0];
 		$ob->status = (null != $status = get_post_meta($ob->ID, $this->META_STATUS, true)) ? $status : array_keys($this->statuses)[0];
 		$ob->color = $this->get_post_color($ob->ID);
@@ -2423,8 +2437,8 @@ class EventPost {
 			'' != $lat &&
 			'' != $long) {
 			update_post_meta($post_id, $this->META_ADD, sanitize_text_field(filter_input(INPUT_POST, $this->META_ADD)));
-			update_post_meta($post_id, $this->META_LAT, sanitize_text_field($lat));
-			update_post_meta($post_id, $this->META_LONG, sanitize_text_field($long));
+			update_post_meta($post_id, $this->META_LAT, $this->sanitize_coordinate(sanitize_text_field($lat)));
+			update_post_meta($post_id, $this->META_LONG, $this->sanitize_coordinate(sanitize_text_field($long)));
 		}
 		else {
 			delete_post_meta($post_id, $this->META_ADD);
@@ -2911,8 +2925,8 @@ class EventPost {
 	 */
 	public function columns_content($column_name, $post_id) {
 		if ($column_name == 'location') {
-			$lat = get_post_meta($post_id, $this->META_LAT, true);
-			$lon = get_post_meta($post_id, $this->META_LONG, true);
+			$lat = $this->sanitize_coordinate(get_post_meta($post_id, $this->META_LAT, true));
+			$lon = $this->sanitize_coordinate(get_post_meta($post_id, $this->META_LONG, true));
 
 			if (!empty($lat) && !empty($lon)) {
 				add_thickbox();
