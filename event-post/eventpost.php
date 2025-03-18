@@ -3,7 +3,7 @@
  * Plugin Name: Event Post
  * Plugin URI: https://event-post.com?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=plugin-uri
  * Description: Add calendar and/or geolocation metadata on any posts.
- * Version: 5.9.9
+ * Version: 5.9.10
  * Author: N.O.U.S. Open Useful and Simple
  * Contributors: bastho, sabrinaleroy, unecologeek, agencenous
  * Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=author
@@ -1670,7 +1670,7 @@ class EventPost {
 		$this->list_id++;
 		if (sizeof($events) > 0) {
 			if (!empty($title)) {
-				$ret.= html_entity_decode($before_title) . $title . html_entity_decode($after_title);
+				$ret .= esc_html($before_title) . esc_html($title) . esc_html($after_title);
 			}
 
 			$child = ($type == 'ol' || $type == 'ul') ? 'li' : 'div';
