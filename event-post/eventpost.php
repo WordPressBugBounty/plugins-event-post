@@ -3,7 +3,7 @@
  * Plugin Name: Event Post
  * Plugin URI: https://event-post.com?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=plugin-uri
  * Description: Add calendar and/or geolocation metadata on any posts.
- * Version: 5.9.10
+ * Version: 5.9.11
  * Author: N.O.U.S. Open Useful and Simple
  * Contributors: bastho, sabrinaleroy, unecologeek, agencenous
  * Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=author
@@ -2415,7 +2415,8 @@ class EventPost {
 		if (false !== $status = filter_input(INPUT_POST, $this->META_STATUS)) {
 			update_post_meta($post_id, $this->META_STATUS, sanitize_text_field($status));
 		}
-		if (false !== $virtual_location = filter_input(INPUT_POST, $this->META_VIRTUAL_LOCATION, FILTER_SANITIZE_URL)) {
+		$virtual_location = filter_input(INPUT_POST, $this->META_VIRTUAL_LOCATION, FILTER_SANITIZE_URL);
+		if ($virtual_location !== null && $virtual_location !== false) {
 			update_post_meta($post_id, $this->META_VIRTUAL_LOCATION, sanitize_url($virtual_location));
 		}
 		// Clean date or no date
@@ -2458,6 +2459,9 @@ class EventPost {
 	 * @return void
 	 */
 	function save_bulkdatas(array $post_ids, array $shared_post_data) {
+		if (!wp_verify_nonce(filter_input(INPUT_GET, 'eventpost_nonce'), plugin_basename(__FILE__))){
+			return;
+		}
 		$current_post_type = isset($shared_post_data['post_type']) ? $shared_post_data['post_type'] : 'post';
 		if (in_array($current_post_type, $this->settings['posttypes'])) {
 			if (!empty($post_ids) && is_array($post_ids)) {
