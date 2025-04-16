@@ -3,7 +3,7 @@
  * Manage sub events
  * 
  * @package event-post
- * @version 5.9.11
+ * @version 5.10.0
  * @since   4.3
  */
 
@@ -326,7 +326,7 @@ class Children{
     }
 
     function check_admin_legitimity(){
-        if (!wp_verify_nonce(filter_input(INPUT_GET, 'eventpost_children_nonce', FILTER_SANITIZE_STRING), 'eventpost_children_nonce') ){
+        if (!wp_verify_nonce(filter_input(INPUT_GET, 'eventpost_children_nonce'), 'eventpost_children_nonce') ){
             wp_die(__('Invalid link', 'event-post'));
     	}
     }

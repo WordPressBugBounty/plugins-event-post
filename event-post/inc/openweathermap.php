@@ -3,10 +3,13 @@
  * Weather support
  * 
  * @package event-post
- * @version 5.9.11
+ * @version 5.10.0
  * @since   4.3.0
  */
-$EventPostWeather = new EventPostWeather();
+
+namespace EventPost;
+
+$EventPostWeather = new Weather();
 
 /**
  * Provides weather support thanks to OpenWeatherMap
@@ -19,7 +22,7 @@ $EventPostWeather = new EventPostWeather();
  * Get an API key
  * http://openweathermap.org/appid#get
  */
-class EventPostWeather {
+class Weather {
 
     var $META_WEATHER;
 
@@ -39,7 +42,7 @@ class EventPostWeather {
     /**
      * PHP4 constructor
      */
-    function EventPostWeather() {
+    function Weather() {
         $this->__construct();
     }
 

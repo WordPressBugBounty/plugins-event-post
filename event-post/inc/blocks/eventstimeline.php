@@ -3,7 +3,7 @@
  * Functions to register client-side assets (scripts and stylesheets) for the Gutenberg block.
  *
  * @package event-post
- * @version 5.9.11
+ * @version 5.10.0
  * @since   5.2
  * @see     https://wordpress.org/gutenberg/handbook/blocks/writing-your-first-block-type/#enqueuing-block-scripts
  */
@@ -23,4 +23,4 @@ function eventpost_timeline_block_init() {
 		'script' => 'event-post-timeline',
 	));
 }
-add_action( 'init', 'eventpost_timeline_block_init' );
+add_action( 'wp_loaded', 'eventpost_timeline_block_init' );

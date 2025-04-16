@@ -3,8 +3,8 @@ Contributors: bastho, leroysabrina, unecologeek, agencenous
 Donate link: https://apps.avecnous.eu/en/product/eventpost/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=donate  
 Tags: calendar, events, booking, map, geolocation  
 Requires at least: 6.3  
-Tested up to: 6.7  
-Stable tag: 5.9.11    
+Tested up to: 6.8  
+Stable tag: 5.10.0    
 Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=author  
 License: GPLv2  
 License URI: https://www.gnu.org/licenses/gpl-2.0.html  
@@ -240,6 +240,18 @@ You can also subscribe to paid plan, I don't care.
 3. Editor interface for event data
 4. Editor interface for location data
 ## Changelog
+
+### 5.10.0
+
+- Add support for organization / remote offer in rich event data
+- Manage multiple maps on single page
+- Security: Escape attributes in custom boxes
+- Fix too much escaped HTML in `eventpost/details` block
+- Fix missing script for single map link
+- Disambiguate `event_category` class
+- Remove deprecated `FILTER_SANITIZE_STRING`
+- Moves Weather to EventPost namespace
+- Re-order hooks, fix warnings
 
 ### 5.9.11
 

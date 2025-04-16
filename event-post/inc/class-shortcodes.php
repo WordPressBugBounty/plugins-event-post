@@ -3,18 +3,16 @@
  * Implements all shortcodes features
  *
  * @package event-post
- * @version 5.9.11
+ * @version 5.10.0
  * @since   5.0.0
  */
 
 namespace EventPost;
 
 class Shortcodes{
-    public $EP;
 
     function __construct() {
         //Shortcodes
-        add_action('init', array(&$this,'init'));
         add_shortcode(apply_filters('eventpost_shortcode_slug', 'events_list'), array(&$this, 'shortcode_list'));
         add_shortcode(apply_filters('eventpost_shortcode_slug', 'events_timeline'), array(&$this, 'shortcode_timeline'));
         add_shortcode(apply_filters('eventpost_shortcode_slug', 'events_map'), array(&$this, 'shortcode_map'));
@@ -25,13 +23,6 @@ class Shortcodes{
         add_shortcode(apply_filters('eventpost_shortcode_slug', 'event_search'), array(&$this, 'shortcode_search'));
     }
 
-    /**
-     * Call functions when WP is ready
-     */
-    public function init(){
-        global $EventPost;
-        $this->EP = $EventPost;
-    }
 
     /**
      * Shortcode single
@@ -48,20 +39,20 @@ class Shortcodes{
         );
         $atts = shortcode_atts($default_atts, $atts);
         $attribute = sanitize_text_field($atts['attribute']);
-        $event = $this->EP->retreive();
+        $event = EventPost()->retreive();
         switch($attribute){
             case 'start':
-                return esc_html($this->EP->human_date($event->time_start));
+                return wp_kses(EventPost()->human_date($event->time_start), EventPost()->kses_tags);
             case 'end':
-                return esc_html($this->EP->human_date($event->time_end));
+                return wp_kses(EventPost()->human_date($event->time_end), EventPost()->kses_tags);
             case 'address':
-                return esc_html($event->address);
+                return wp_kses($event->address, EventPost()->kses_tags);
             case 'location':
-                return esc_html($this->EP->get_singleloc($event, '', 'single'));
+                return wp_kses(EventPost()->get_singleloc($event, '', 'single'), EventPost()->kses_tags);
             case 'date':
-                return esc_html($this->EP->get_singledate($event, '', 'single'));
+                return wp_kses(EventPost()->get_singledate($event, '', 'single'), EventPost()->kses_tags);
             default:
-                return esc_html($this->EP->get_single($event, '', 'single'));
+                return wp_kses(EventPost()->get_single($event, '', 'single'), EventPost()->kses_tags);
         }
     }
 
@@ -85,8 +76,8 @@ class Shortcodes{
             'post_type' => sanitize_text_field($atts['post_type']),
         );
         extract($atts);
-        if(false !== $the_term = $this->EP->retreive_term($term, $tax, $post_type)){
-             return $this->EP->delta_date($the_term->time_start, $the_term->time_end);
+        if(false !== $the_term = EventPost()->retreive_term($term, $tax, $post_type)){
+             return EventPost()->delta_date($the_term->time_start, $the_term->time_end);
         }
     }
     public function shortcode_cat($_atts){
@@ -158,16 +149,16 @@ class Shortcodes{
             'height' => 'auto',
             'style' => '',
             'pages' => false,
-            'container_schema' => $this->EP->list_shema['container'],
-            'item_schema' => $this->EP->list_shema['item'],
+            'container_schema' => EventPost()->list_shema['container'],
+            'item_schema' => EventPost()->list_shema['item'],
             'className' => '',
         ), 'shortcode_list'), $_atts);
 
-        if ($atts['container_schema'] != $this->EP->list_shema['container'])
+        if ($atts['container_schema'] != EventPost()->list_shema['container'])
             $atts['container_schema'] = html_entity_decode($atts['container_schema']);
-        if ($atts['item_schema'] != $this->EP->list_shema['item'])
+        if ($atts['item_schema'] != EventPost()->list_shema['item'])
             $atts['item_schema'] = html_entity_decode($atts['item_schema']);
-        return $this->EP->list_events($atts, 'event_list', 'shortcode');
+        return EventPost()->list_events($atts, 'event_list', 'shortcode');
     }
 
     /**
@@ -219,16 +210,16 @@ class Shortcodes{
             'width' => '',
             'height' => 'auto',
             'style' => '',
-            'container_schema' => $this->EP->timeline_shema['container'],
-            'item_schema' => $this->EP->timeline_shema['item'],
+            'container_schema' => EventPost()->timeline_shema['container'],
+            'item_schema' => EventPost()->timeline_shema['item'],
             'className' => '',
         ), 'shortcode_list'), $_atts);
 
-        if ($atts['container_schema'] != $this->EP->timeline_shema['container'])
+        if ($atts['container_schema'] != EventPost()->timeline_shema['container'])
             $atts['container_schema'] = html_entity_decode($atts['container_schema']);
-        if ($atts['item_schema'] != $this->EP->timeline_shema['item'])
+        if ($atts['item_schema'] != EventPost()->timeline_shema['item'])
             $atts['item_schema'] = html_entity_decode($atts['item_schema']);
-        return $this->EP->list_events($atts, 'event_timeline', 'shortcode');
+        return EventPost()->list_events($atts, 'event_timeline', 'shortcode');
     }
 
     /**
@@ -242,7 +233,7 @@ class Shortcodes{
      */
     public function shortcode_map($_atts) {
       
-        $ep_settings = $this->EP->settings;
+        $ep_settings = EventPost()->settings;
         $defaults = array(
             // Display
             'width' => '',
@@ -275,17 +266,17 @@ class Shortcodes{
             'className' => '',
         );
             // UI options
-        foreach($this->EP->map_interactions as $int_key=>$int_name){
+        foreach(EventPost()->map_interactions as $int_key=>$int_name){
             $defaults[$int_key]=true;
         }
             // - UI options
-        foreach($this->EP->map_interactions as $int_key=>$int_name){
+        foreach(EventPost()->map_interactions as $int_key=>$int_name){
             $defaults['disable_'.strtolower($int_key)]=false;
         }
 
         $atts = shortcode_atts(apply_filters('eventpost_params', $defaults, 'shortcode_map'), $_atts);
             // UI options
-        foreach($this->EP->map_interactions as $int_key=>$int_name){
+        foreach(EventPost()->map_interactions as $int_key=>$int_name){
             if($atts['disable_'.strtolower($int_key)]==true){
                 $atts[$int_key]=false;
             }
@@ -293,7 +284,7 @@ class Shortcodes{
         }
         $atts['geo'] = 1;
         $atts['type'] = 'div';
-        return $this->EP->list_events($atts, 'event_geolist', 'shortcode'); //$nb,'div',$future,$past,1,'event_geolist');
+        return EventPost()->list_events($atts, 'event_geolist', 'shortcode'); //$nb,'div',$future,$past,1,'event_geolist');
     }
 
     /**
@@ -345,7 +336,7 @@ class Shortcodes{
                     data-dp="' . esc_attr($datepicker) . '"
                     data-title="'. esc_attr($display_title) .'"
                 >'
-            . wp_kses_post($this->EP->calendar($atts))
+            . wp_kses_post(EventPost()->calendar($atts))
         . '</div>';
     }
 
@@ -357,7 +348,7 @@ class Shortcodes{
      * @return type
      */
     public function shortcode_search($_atts){
-        return $this->EP->search($_atts);
+        return EventPost()->search($_atts);
     }
 
 }

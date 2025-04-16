@@ -3,7 +3,7 @@
  * Functions to register client-side assets (scripts and stylesheets) for the Gutenberg block.
  *
  * @package event-post
- * @version 5.9.11
+ * @version 5.10.0
  * @since   5.2
  * @see     https://wordpress.org/gutenberg/handbook/blocks/writing-your-first-block-type/#enqueuing-block-scripts
  */
@@ -19,4 +19,4 @@ function eventdetails_block_init() {
 		'render_callback' => array(EventPost()->Shortcodes, 'shortcode_single'),
 	));
 }
-add_action( 'init', 'eventdetails_block_init' );
+add_action( 'wp_loaded', 'eventdetails_block_init' );

@@ -3,7 +3,7 @@
  * Plugin Name: Event Post
  * Plugin URI: https://event-post.com?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=plugin-uri
  * Description: Add calendar and/or geolocation metadata on any posts.
- * Version: 5.9.11
+ * Version: 5.10.0
  * Author: N.O.U.S. Open Useful and Simple
  * Contributors: bastho, sabrinaleroy, unecologeek, agencenous
  * Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=author
@@ -91,6 +91,7 @@ class EventPost {
 	 * The meta name for event latitude
 	 * 
 	 * @var string
+	 * 
 	 * @see http://codex.wordpress.org/Geodata
 	 */
 	public $META_LAT = 'geo_latitude';
@@ -99,6 +100,7 @@ class EventPost {
 	 * The meta name for event longitude
 	 * 
 	 * @var string
+	 * 
 	 * @see http://codex.wordpress.org/Geodata
 	 */
 	public $META_LONG = 'geo_longitude';
@@ -107,6 +109,7 @@ class EventPost {
 	 * The meta name for event location
 	 * 
 	 * @var string
+	 * 
 	 * @see https://schema.org/location
 	 */
 	public $META_VIRTUAL_LOCATION = 'event_virtual_location';
@@ -118,6 +121,7 @@ class EventPost {
 	 * The meta name for event status
 	 * 
 	 * @var string
+	 * 
 	 * @see https://schema.org/eventStatus
 	 */
 	public $META_STATUS = 'event_status';
@@ -126,9 +130,27 @@ class EventPost {
 	 * The meta name for event attendance mode
 	 * 
 	 * @var string
+	 * 
 	 * @see https://schema.org/eventAttendanceMode
 	 */
 	public $META_ATTENDANCE_MODE = 'event_attendance_mode';
+
+	/**
+	 * The meta name for event organizer
+	 * 
+	 * @var string
+	 * 
+	 * @see https://schema.org/Organization
+	 */
+	public $META_ORGANIZATION = 'event_organization';
+
+	/**
+	 * The meta name for event organizer
+	 * 
+	 * @var string
+	 * @see https://schema.org/Offer
+	 */
+	public $META_OFFER = 'event_offer';
 	
 	// --------------------------------------------------------------------------------
 	// Usefull variables
@@ -141,9 +163,16 @@ class EventPost {
 	public $list_id;
 
 	/**
+	 * ID of the current map
+	 * 
+	 * @var int
+	 */
+	public $map_id=0;
+
+	/**
 	 * Schema as been outputed or not
 	 * 
-	 * @type bool
+	 * @var bool
 	 */
 	private $is_schema_output=false;
 
@@ -160,6 +189,13 @@ class EventPost {
 	 * @var array
 	 */
 	public $Week;
+
+	/**
+	 * Currencies
+	 * 
+	 * @var array
+	 */
+	public $currencies = array();
 
 	/**
 	 * Date format
@@ -325,7 +361,9 @@ class EventPost {
 
 	public function __construct() {
 		add_action('init', array(&$this,'init'), 1);
-		add_action('widgets_init', array(&$this,'widgets_init'), 1);
+		add_action('init', array(&$this,'widgets_init'), 10);
+		add_action('init', array(&$this, 'register_widgets'), 30, 1);
+
 		add_action('save_post', array(&$this, 'save_postdata'));
 		add_filter('dashboard_glance_items', array(&$this, 'dashboard_right_now'));
 
@@ -364,11 +402,8 @@ class EventPost {
 		add_action('wp_ajax_EventPostFeed', array(&$this, 'feed'));
 		add_action('wp_ajax_nopriv_EventPostFeed', array(&$this, 'feed'));
 
-		//
+		// Internal filters
 		add_filter('eventpost_list_shema',array(&$this, 'custom_shema'),10,1);
-
-
-		add_action('widgets_init', array(&$this, 'register_widgets'),1,1);
 
 		// Quick edit
 		add_action( 'bulk_edit_custom_box', array( &$this, 'bulk_edit' ), 10, 2 );
@@ -412,16 +447,7 @@ class EventPost {
 		$plugins_url = str_replace(site_url(), '', $plugins_url);
 		add_rewrite_rule('event-feed/?', $admin_url , 'top');
 		add_rewrite_rule('eventpost/([0-9]*)\.(ics|vcs)?',$plugins_url, 'top');
-	}
-
-	/**
-	 * Init all variables when WP is ready
-	 *
-	 * @action evenpost_init
-	 * @filter eventpost_default_list_shema
-	 * @filter eventpost_list_shema
-	 */
-	public function widgets_init(){
+		
 		$this->list_id = 0;
 		$this->NomDuMois = array('', __('Jan', 'event-post'), __('Feb', 'event-post'), __('Mar', 'event-post'), __('Apr', 'event-post'), __('May', 'event-post'), __('Jun', 'event-post'), __('Jul', 'event-post'), __('Aug', 'event-post'), __('Sept', 'event-post'), __('Oct', 'event-post'), __('Nov', 'event-post'), __('Dec', 'event-post'));
 		$this->Week = array(__('Sunday', 'event-post'), __('Monday', 'event-post'), __('Tuesday', 'event-post'), __('Wednesday', 'event-post'), __('Thursday', 'event-post'), __('Friday', 'event-post'), __('Saturday', 'event-post'));
@@ -431,34 +457,18 @@ class EventPost {
 			'OnlineEventAttendanceMode' => _x('Online', 'Attendance Mode', 'event-post'),
 		);
 		$this->statuses = array(
-			'EventScheduled' =>_x('Scheduled', 'Event Status', 'event-post'),
-			'EventCancelled'=>_x('Cancelled', 'Event Status', 'event-post'),
-			'EventMovedOnline'=>_x('Moved Online', 'Event Status', 'event-post'),
-			'EventPostponed'=>_x('Postoned', 'Event Status', 'event-post'),
-			'EventRescheduled'=>_x('Rescheduled', 'Event Status', 'event-post'),
-			'EventCompleted'=>_x('Completed', 'Event Status', 'event-post'),
+			'EventScheduled' => _x('Scheduled', 'Event Status', 'event-post'),
+			'EventCancelled' => _x('Cancelled', 'Event Status', 'event-post'),
+			'EventMovedOnline' => _x('Moved Online', 'Event Status', 'event-post'),
+			'EventPostponed' => _x('Postoned', 'Event Status', 'event-post'),
+			'EventRescheduled' => _x('Rescheduled', 'Event Status', 'event-post'),
+			'EventCompleted' => _x('Completed', 'Event Status', 'event-post'),
 		);
-
+		
 		$this->maps = $this->get_maps();
 		$this->settings = $this->get_settings();
-
+		
 		do_action('evenpost_init', $this);
-
-		$this->Shortcodes = new EventPost\Shortcodes();
-
-		if(function_exists('register_block_type')){
-			$block_path = plugin_dir_path(__FILE__).'inc/blocks/';
-			include_once ($block_path . 'eventslist.php');
-			include_once ($block_path . 'eventstimeline.php');
-			include_once ($block_path . 'eventsmap.php');
-			include_once ($block_path . 'eventscalendar.php');
-			include_once ($block_path . 'eventdetails.php');
-		}
-
-		// WooCommerce
-		if (class_exists('WooCommerce') && in_array('product', $this->settings['posttypes'])) {
-			include_once (plugin_dir_path(__FILE__).'inc/woocommerce.php');
-		}
 
 		// Edit
 		add_action('add_meta_boxes', array(&$this, 'add_custom_box'));
@@ -477,6 +487,8 @@ class EventPost {
 			// $this->markpath = plugin_dir_path(__FILE__) . 'markers/';
 			// $this->markurl = plugins_url('/markers/', __FILE__);
 		}
+
+		$this->currencies = include (plugin_dir_path(__FILE__) . 'inc/data/currencies.php');
 
 		$this->dateformat = str_replace(array('yy', 'mm', 'dd'), array('Y', 'm', 'd'), __('yy-mm-dd', 'event-post'));
 
@@ -561,7 +573,34 @@ class EventPost {
 			file_get_contents(plugin_dir_path(__FILE__).'inc/data/kses-tags.json'),
 			true
 		));
+		
 
+	}
+
+	/**
+	 * Init all variables when WP is ready
+	 *
+	 * @action evenpost_init
+	 * @filter eventpost_default_list_shema
+	 * @filter eventpost_list_shema
+	 */
+	public function widgets_init(){
+		$this->Shortcodes = new EventPost\Shortcodes();
+
+		if(function_exists('register_block_type')){
+			$block_path = plugin_dir_path(__FILE__).'inc/blocks/';
+			include_once ($block_path . 'eventslist.php');
+			include_once ($block_path . 'eventstimeline.php');
+			include_once ($block_path . 'eventsmap.php');
+			include_once ($block_path . 'eventscalendar.php');
+			include_once ($block_path . 'eventdetails.php');
+		}
+
+
+		// WooCommerce
+		if (class_exists('WooCommerce') && in_array('product', $this->settings['posttypes'])) {
+			include_once (plugin_dir_path(__FILE__).'inc/woocommerce.php');
+		}
 	}
 
 	public function register_widgets(){
@@ -803,6 +842,9 @@ class EventPost {
 			}
 		}
 		wp_add_inline_script('event-post', 'var EventPost = EventPost || {}; EventPost.front='.wp_json_encode(array(
+			'scripts' => array(
+				'map' => plugins_url('/build/map/event-map.js', __FILE__)
+			),
 			'imgpath' => plugins_url('/img/', __FILE__),
 			'maptiles' => $maps,
 			'defaulttile' => $this->settings['tile'],
@@ -990,6 +1032,28 @@ class EventPost {
 			) : null,
 			'description'=>$event->description,
 		);
+		if(!empty($event->organization)){
+			$rich_data['organizer'] = array(
+				'@type'=>'Organization',
+				'name'=>$event->organization,
+			);
+		}
+		if(!empty($event->offer)){
+			$rich_data['offers'] = array(
+				'@type'=>'Offer',
+				// 'availability'=>$event->availability,
+				// 'validFrom'=>date($time_format, $event->time_start),
+			);
+			if(!empty($event->offer['url'])){
+				$rich_data['offers']['url'] = $event->offer['url'];
+			}
+			if(!empty($event->offer['price'])){
+				$rich_data['offers']['price'] = $event->offer['price'];
+			}
+			if(!empty($event->offer['currency'])){
+				$rich_data['offers']['priceCurrency'] = $event->offer['currency'];
+			}
+		}
 		
 		return apply_filters('event-post-rich-result', $rich_data, $event);
 	}
@@ -1325,6 +1389,7 @@ class EventPost {
 			$post = $this->retreive($post);
 		}
 		if ($post != false){
+			$this->map_id++;
 			$address = $post->address;
 			$lat = $post->lat;
 			$long = $post->long;
@@ -1342,24 +1407,25 @@ class EventPost {
 			if ($this->is_offline($post) && ($address != '' || ($lat != '' && $long != ''))) {
 				$location.="\t\t\t\t".'<address';
 				if ($lat != '' && $long != '') {
-					$location.=' 	data-id="' . $post->ID . '"
-												data-latitude="' . esc_attr($lat) . '"
-												data-longitude="' . esc_attr($long) . '"
-												data-marker="' . esc_attr($this->get_marker($color)) . '"
-												data-iconcode="' .esc_attr($icon). '"
-												data-icon="' . esc_attr(mb_convert_encoding('&#x'.$icon.';', 'UTF-8', 'HTML-ENTITIES')). '"
-												data-color="#' . esc_attr($color). '"';
+					$geo_attributes = ' data-latitude="' . esc_attr($lat) . '"
+										data-longitude="' . esc_attr($long) . '"
+										data-marker="' . esc_attr($this->get_marker($color)) . '"
+										data-iconcode="' .esc_attr($icon). '"
+										data-icon="' . esc_attr(mb_convert_encoding('&#x'.$icon.';', 'UTF-8', 'HTML-ENTITIES')). '"
+										data-color="#' . esc_attr($color). '"
+										data-id="' . $post->ID . '-'.$this->map_id.'"';
+					$location.=' '.$geo_attributes;
 				}
 				$location.=' itemprop="adr" class="eventpost-address">'
 						. "\n\t\t\t\t\t\t\t".'<span>'
 						. "\n".$address
 						. "\n\t\t\t\t\t\t\t". '</span>';
 				if ($context=='single' && $lat != '' && $long != '') {
-					$location.="\n\t\t\t\t\t\t\t".'<a class="event_link gps dashicons-before dashicons-location-alt" href="https://www.openstreetmap.org/?lat=' . esc_attr($lat) .'&amp;lon=' . esc_attr($long) . '&amp;zoom=13" target="_blank"  itemprop="geo">' . __('Map', 'event-post') . '</a>';
+					$location.="\n\t\t\t\t\t\t\t".'<a class="event_link gps dashicons-before dashicons-location-alt" href="https://www.openstreetmap.org/?lat=' . esc_attr($lat) .'&amp;lon=' . esc_attr($long) . '&amp;zoom=13" target="_blank"  itemprop="geo" ' . $geo_attributes . '>' . __('Map', 'event-post') . '</a>';
 				}
 				$location.="\n\t\t\t\t\t\t".'</address>';
 				if (wp_is_mobile() && $lat != '' && $long != '') {
-					$location.="\n\t\t\t\t\t\t".'<a class="event_link gps-geo-link" href="geo:' . esc_attr($lat) . ',' . esc_attr($long) . '" target="_blank"  itemprop="geo"><i class="dashicons-before dashicons-location"></i> ' . __('Open in app', 'event-post') . '</a>';
+					$location.="\n\t\t\t\t\t\t".'<a class="event_link gps-geo-link" href="geo:' . esc_attr($lat) . ',' . esc_attr($long) . '" target="_blank"  itemprop="geo" ' . $geo_attributes . '><i class="dashicons-before dashicons-location"></i> ' . __('Open in app', 'event-post') . '</a>';
 				}
 			}
 		}
@@ -1406,7 +1472,7 @@ class EventPost {
 
 				foreach ($categories as $category) {
 					$cats.="\t\t\t\t\t".'<span ';
-					$classes = array('event_category');
+					$classes = array('event-term', 'event_term_category');
 					$darkness = 0;
 					$color = $this->Taxonomies->get_taxonomy_color($category->term_id);
 					if ($color != '' && $color) {
@@ -2113,6 +2179,15 @@ class EventPost {
 		$ob->time_end = !empty($ob->end) ? strtotime($ob->end) : '';
 		$ob->virtual_location = get_post_meta($ob->ID, $this->META_VIRTUAL_LOCATION, true);
 		$ob->virtual_location = esc_url($ob->virtual_location);
+		$ob->organization = get_post_meta($ob->ID, $this->META_ORGANIZATION, true);
+		$ob->offer = get_post_meta($ob->ID, $this->META_OFFER, true);
+		if(empty($ob->offer)){
+			$ob->offer = array(
+				'url' => null,
+				'price' => null,
+				'currency' => null,
+			);
+		}
 		$ob->address = get_post_meta($ob->ID, $this->META_ADD, true);
 		$ob->lat = $this->sanitize_coordinate(get_post_meta($ob->ID, $this->META_LAT, true));
 		$ob->long = $this->sanitize_coordinate(get_post_meta($ob->ID, $this->META_LONG, true));
@@ -2418,6 +2493,24 @@ class EventPost {
 		$virtual_location = filter_input(INPUT_POST, $this->META_VIRTUAL_LOCATION, FILTER_SANITIZE_URL);
 		if ($virtual_location !== null && $virtual_location !== false) {
 			update_post_meta($post_id, $this->META_VIRTUAL_LOCATION, sanitize_url($virtual_location));
+		}
+		if (false !== $organization = filter_input(INPUT_POST, $this->META_ORGANIZATION)) {
+			update_post_meta($post_id, $this->META_ORGANIZATION, sanitize_text_field($organization));
+		}
+		$offer_url = filter_input(INPUT_POST, "{$this->META_OFFER}_url", FILTER_SANITIZE_URL);
+		$offer_price = filter_input(INPUT_POST, "{$this->META_OFFER}_price");
+		$offer_currency = filter_input(INPUT_POST, "{$this->META_OFFER}_currency");
+		if  ($offer_url || ($offer_price && $offer_currency) ) {
+			// Format floating
+			$offer_price = $offer_price ? str_replace(',', '.', $offer_price) : null;
+			update_post_meta($post_id, $this->META_OFFER, array(
+				'url' => $offer_url ? sanitize_text_field($offer_url) : null,
+				'price' => $offer_price ? (float) $offer_price : null,
+				'currency' => $offer_currency ? sanitize_text_field($offer_currency) : null,
+			));
+		}
+		else{
+			delete_post_meta($post_id, $this->META_OFFER);
 		}
 		// Clean date or no date
 		if ((false !== $start = filter_input(INPUT_POST, $this->META_START)) &&
@@ -3058,7 +3151,7 @@ class EventPost {
 
 	public function export(){
 		if(false !== $event_id=\filter_input(INPUT_GET, 'event_id',FILTER_SANITIZE_NUMBER_INT)){
-			$format = \filter_input(INPUT_GET, 'format',FILTER_SANITIZE_STRING);
+			$format = \filter_input(INPUT_GET, 'format');
 			$this->generate_ics($event_id, $format);
 		}
 	}
@@ -3068,7 +3161,7 @@ class EventPost {
 	 * Outputs an ICS document
 	 */
 	public function feed(){
-		if(false !== $cat=\filter_input(INPUT_GET, 'cat',FILTER_SANITIZE_STRING)){
+		if(false !== $cat=\filter_input(INPUT_GET, 'cat')){
 			$vtz = get_option('timezone_string');
 				$gmt = $this->get_gmt_offset();
 			date_default_timezone_set($vtz);

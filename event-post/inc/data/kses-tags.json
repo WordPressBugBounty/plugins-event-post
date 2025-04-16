@@ -1,5 +1,12 @@
 {
     "a": {
+        "data-latitude": [],
+        "data-longitude": [],
+        "data-marker": [],
+        "data-iconcode": [],
+        "data-icon": [],
+        "data-color": [],
+        "data-id": [],
         "class": [],
         "href": [],
         "title": [],
