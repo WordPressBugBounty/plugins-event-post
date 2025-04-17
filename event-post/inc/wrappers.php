@@ -3,7 +3,7 @@
  * Shortcuts for useful functions in templates
  * 
  * @package event-post
- * @version 5.10.0
+ * @version 5.10.1
  * @since   5.0.0
  */
 

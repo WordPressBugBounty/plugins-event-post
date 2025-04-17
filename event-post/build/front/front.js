@@ -1,1 +1,1 @@
-jQuery(document).ready(function(){jQuery("a.event_link.gps").length&&void 0===EventPost.OL&&jQuery.getScript(EventPost.front.scripts.map,function(){})});
+jQuery(document).ready(function(){jQuery("a.event_link.gps, .event_geolist").length&&void 0===EventPost.OL&&jQuery.getScript(EventPost.front.scripts.map,function(){})});
