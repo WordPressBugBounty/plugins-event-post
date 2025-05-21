@@ -3,7 +3,7 @@
  * Implements all shortcodes features
  *
  * @package event-post
- * @version 5.10.1
+ * @version 5.10.2
  * @since   5.0.0
  */
 
@@ -153,11 +153,16 @@ class Shortcodes{
             'item_schema' => EventPost()->list_shema['item'],
             'className' => '',
         ), 'shortcode_list'), $_atts);
-
+        
         if ($atts['container_schema'] != EventPost()->list_shema['container'])
             $atts['container_schema'] = html_entity_decode($atts['container_schema']);
-        if ($atts['item_schema'] != EventPost()->list_shema['item'])
+            $atts['container_schema'] = wp_kses($atts['container_schema'], EventPost()->kses_tags);
+        
+        if ($atts['item_schema'] != EventPost()->list_shema['item']) {
             $atts['item_schema'] = html_entity_decode($atts['item_schema']);
+            $atts['item_schema'] = wp_kses($atts['item_schema'], EventPost()->kses_tags);
+        }
+        
         return EventPost()->list_events($atts, 'event_list', 'shortcode');
     }
 
