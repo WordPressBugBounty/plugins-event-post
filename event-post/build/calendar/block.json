@@ -2,7 +2,7 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 2,
   "name": "eventpost/calendar",
-  "version": "5.10.2",
+  "version": "5.10.3",
   "title": "Events Calendar",
   "category": "common",
   "icon": "calendar",

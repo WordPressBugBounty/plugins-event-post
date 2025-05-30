@@ -3,7 +3,7 @@
  * Do not call this file, just used for generating .pot file
  * 
  * @package event-post
- * @version 5.10.2
+ * @version 5.10.3
  * @since   5.2
  */
 
