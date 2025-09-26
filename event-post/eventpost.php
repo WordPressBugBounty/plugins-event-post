@@ -3,7 +3,7 @@
  * Plugin Name: Event Post
  * Plugin URI: https://event-post.com?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=plugin-uri
  * Description: Add calendar and/or geolocation metadata on any posts.
- * Version: 5.10.3
+ * Version: 5.10.4
  * Author: N.O.U.S. Open Useful and Simple
  * Contributors: bastho, sabrinaleroy, unecologeek, agencenous
  * Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=author
@@ -917,6 +917,8 @@ class EventPost {
 			'start_drag'=>__('Click to<br>drag the map<br>and change location','event-post'),
 			'empty_address'=>__('Be kind to fill a non empty address:)', 'event-post'),
 			'search'=>__('Type an address', 'event-post'),
+			'search_button'=>__('Search', 'event-post'),
+			'geocoding_attribution'=>__('Geocoding by <a href="https://nominatim.openstreetmap.org/" target="_blank">OpenStreetmap Nominatim</a>', 'event-post'),
 			'stop_drag'=>_x('Done','Stop allowing to drag the map', 'event-post'),
 			'datepickeri18n'=>array(
 				// Translators: %1$s is the month name, %2$s is the day number, %3$s is the year, %4$s is the hour, %5$s is the minute
@@ -1739,7 +1741,8 @@ class EventPost {
 				$ret .= esc_html($before_title) . esc_html($title) . esc_html($after_title);
 			}
 
-			$child = ($type == 'ol' || $type == 'ul') ? 'li' : 'div';
+			$type = in_array($type, ['div', 'ul', 'ol']) ? $type : 'div';
+			$child = in_array($type, ['ul', 'ol']) ? 'li' : 'div';
 
 			$html = '';
 
@@ -2986,13 +2989,31 @@ class EventPost {
 				if (strpos($language, '-') > -1) {
 					$language = strtolower(substr($language, 0, 2));
 				}
-				$remote_val = wp_safe_remote_request('http://nominatim.openstreetmap.org/search?q=' . rawurlencode($q) . '&format=json&accept-language=' . $language);
-				if(json_decode($remote_val['body'])){
-				  $val = $remote_val['body'];
+				$remote_val = wp_safe_remote_request('https://nominatim.openstreetmap.org/search?q=' . rawurlencode($q) . '&format=json&accept-language=' . $language, [
+					'user-agent' => getenv('HTTP_USER_AGENT') ?? 'WordPress/' . get_bloginfo('version') . '; ' . get_bloginfo('url'),
+					'headers' => [
+						'Referer' => get_bloginfo('url'),
+					],
+					'timeout' => 5,
+				]);
+				$remote_body = wp_remote_retrieve_body($remote_val);
+				if(strstr($remote_body, '<html>')){
+					$val = [
+						[
+							'lat' => '',
+							'lon' => '',
+							'display_name' => strip_tags($remote_body),
+						]
+					];
 				}
-				set_transient($transient_name, $val, 30 * DAY_IN_SECONDS);
+				else{
+					$val = json_decode($remote_body);
+					if($val){
+						set_transient($transient_name, $val, 30 * DAY_IN_SECONDS);
+					}
+				}
 			}
-			wp_send_json( json_decode($val) );
+			wp_send_json( $val );
 			exit();
 		}
 	}

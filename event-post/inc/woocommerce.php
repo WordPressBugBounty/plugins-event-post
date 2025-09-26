@@ -3,7 +3,7 @@
  * Support for WooCommerce
  *
  * @package event-post
- * @version 5.10.3
+ * @version 5.10.4
  * @since   5.8.0
  */
 
