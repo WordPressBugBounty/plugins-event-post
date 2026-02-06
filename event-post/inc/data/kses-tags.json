@@ -12,14 +12,6 @@
         "title": [],
         "target": []
     },
-    "button": {
-        "class": [],
-        "data-date": [],
-        "id": [],
-        "title": [],
-        "tabindex": [],
-        "style": []
-    },
     "i": {
         "class": [],
         "id": [],
@@ -93,6 +85,52 @@
         "class": [],
         "id": [],
         "style": []
+    },
+    "button": {
+        "class": [],
+        "data-date": [],
+        "id": [],
+        "title": [],
+        "tabindex": [],
+        "style": []
+    },
+    "input": {
+        "type": [],
+        "value": [],
+        "name": [],
+        "class": [],
+        "data-date": [],
+        "id": [],
+        "title": [],
+        "tabindex": [],
+        "disabled": [],
+        "style": []
+    },
+    "textarea": {
+        "type": [],
+        "value": [],
+        "name": [],
+        "class": [],
+        "data-date": [],
+        "id": [],
+        "title": [],
+        "tabindex": [],
+        "disabled": [],
+        "style": []
+    },
+    "select": {
+        "class": [],
+        "name": [],
+        "data-date": [],
+        "id": [],
+        "title": [],
+        "tabindex": [],
+        "disabled": [],
+        "style": []
+    },
+    "option": {
+        "value": [],
+        "selected": []
     },
     "table": {
         "class": [],

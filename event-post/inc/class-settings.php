@@ -3,7 +3,7 @@
  * Settings
  *
  * @package event-post
- * @version 5.10.4
+ * @version 5.11.0
  * @since   5.4.0
  */
 
@@ -489,40 +489,40 @@ class Settings{
 
 	function settings_field_default_callback($args){
 		?>
-		<input 	name="ep_settings[<?php echo $args['name']; ?>]"
-						style="<?php echo isset($args['input-style']) ?  $args['input-style'] : null ?>"
-						id="<?php echo $args['name']; ?>"
-						value="<?php echo EventPost()->settings[$args['name']]; ?>"
-						class="regular-text <?php echo isset($args['input-class']) ?  $args['input-class'] : null ?>"/>
+		<input 	name="ep_settings[<?php echo esc_attr($args['name']); ?>]"
+						style="<?php echo esc_attr(isset($args['input-style']) ?  $args['input-style'] : ''); ?>"
+						id="<?php echo esc_attr($args['name']); ?>"
+						value="<?php echo esc_attr(EventPost()->settings[$args['name']]); ?>"
+						class="regular-text <?php echo esc_attr(isset($args['input-class']) ?  $args['input-class'] : ''); ?>"/>
 		<?php if(isset($args['description']) && $args['description']): ?>
-		<p class="description"><?php echo $args['description']; ?></p>
+		<p class="description"><?php echo esc_html($args['description']); ?></p>
 		<?php endif; ?>
 		<?php
 	}
 	function settings_field_textarea_callback($args){
 		?>
-		<textarea name="ep_settings[<?php echo $args['name']; ?>]"
-							style="<?php echo isset($args['input-style']) ?  $args['input-style'] : null ?>"
-							id="<?php echo $args['name']; ?>"
-							class="regular-text <?php echo isset($args['input-class']) ?  $args['input-class'] : null ?>"
-							><?php echo EventPost()->settings[$args['name']]; ?></textarea>
+		<textarea name="ep_settings[<?php echo esc_attr($args['name']); ?>]"
+							style="<?php echo esc_attr(isset($args['input-style']) ?  $args['input-style'] : ''); ?>"
+							id="<?php echo esc_attr($args['name']); ?>"
+							class="regular-text <?php echo esc_attr(isset($args['input-class']) ?  $args['input-class'] : ''); ?>"
+							><?php echo esc_textarea(EventPost()->settings[$args['name']]); ?></textarea>
 		<?php if(isset($args['description']) && $args['description']): ?>
-		<p class="description"><?php echo $args['description']; ?></p>
+		<p class="description"><?php echo esc_html($args['description']); ?></p>
 		<?php endif; ?>
 		<?php
 	}
 	function settings_field_select_callback($args){
 		?>
-		<select name="ep_settings[<?php echo $args['name']; ?>]"
-						style="<?php echo isset($args['input-style']) ?  $args['input-style'] : null ?>"
-						id="<?php echo $args['name']; ?>"
-						class="<?php echo isset($args['input-class']) ?  $args['input-class'] : null ?>">
+		<select name="ep_settings[<?php echo esc_attr($args['name']); ?>]"
+						style="<?php echo esc_attr(isset($args['input-style']) ?  $args['input-style'] : ''); ?>"
+						id="<?php echo esc_attr($args['name']); ?>"
+						class="<?php echo esc_attr(isset($args['input-class']) ?  $args['input-class'] : ''); ?>">
 		<?php foreach($args['options'] as $value=>$label) : ?>
-			<option value="<?php echo $value; ?>" <?php selected($value, EventPost()->settings[$args['name']], true);?>><?php echo $label; ?></option>
+			<option value="<?php echo esc_attr($value); ?>" <?php selected($value, EventPost()->settings[$args['name']], true);?>><?php echo esc_html($label); ?></option>
 		<?php endforeach; ?>
 		</select>
 		<?php if(isset($args['description']) && $args['description']): ?>
-		<p class="description"><?php echo $args['description']; ?></p>
+		<p class="description"><?php echo esc_html($args['description']); ?></p>
 		<?php endif; ?>
 		<?php
 	}
@@ -531,13 +531,13 @@ class Settings{
 		<?php foreach($args['options'] as $value=>$label) : ?>
 		<p>
 			<label>
-				<input type="checkbox" name="ep_settings[<?php echo $args['name']; ?>][<?php echo $value; ?>]" value="<?php echo $value; ?>" <?php checked(in_array($value, EventPost()->settings[$args['name']]),true, true) ?>>
-				<?php echo $label; ?>
+				<input type="checkbox" name="ep_settings[<?php echo esc_attr($args['name']); ?>][<?php echo esc_attr($value); ?>]" value="<?php echo esc_attr($value); ?>" <?php checked(in_array($value, EventPost()->settings[$args['name']]),true, true) ?>>
+				<?php echo esc_html($label); ?>
 			</label>
 		</p>
 		<?php endforeach; ?>
 		<?php if(isset($args['description']) && $args['description']): ?>
-		<p class="description"><?php echo $args['description']; ?></p>
+		<p class="description"><?php echo esc_html($args['description']); ?></p>
 		<?php endif; ?>
 		<?php
 	}
@@ -548,25 +548,25 @@ class Settings{
 		<div>
 			<label>
 				<input type="radio" name="ep_settings[datepicker]" id="ep_datepicker_simple" value="simple" <?php checked(EventPost()->settings['datepicker'],'simple', true) ?>>
-				<?php _e('Simple', 'event-post'); ?>
+				<?php esc_html_e('Simple', 'event-post'); ?>
 			</label>
 			<p>
 				<span id="eventpost_simple_date_human" class="human_date">
-					 <?php echo $human_date; ?>
+					 <?php echo esc_html($human_date); ?>
 				</span>
-				<input type="text" class="eventpost-datepicker-simple" id="eventpost_simple_date" value="<?php echo $now; ?>">
+				<input type="text" class="eventpost-datepicker-simple" id="eventpost_simple_date" value="<?php echo esc_attr($now); ?>">
 			</p>
 		</div>
 		<div>
 			<label>
 				<input type="radio" name="ep_settings[datepicker]" id="ep_datepicker_native" value="native" <?php checked(EventPost()->settings['datepicker'],'native', true) ?>>
-				<?php _e('Native WordPress style', 'event-post'); ?>
+				<?php esc_html_e('Native WordPress style', 'event-post'); ?>
 			</label>
 			<p>
 				<span id="eventpost_native_date_human" class="human_date">
-					 <?php echo $human_date; ?>
+					 <?php echo esc_html($human_date); ?>
 				</span>
-				<input type="text" class="eventpost-datepicker-native" id="eventpost_native_date" value="<?php echo $now; ?>">
+				<input type="text" class="eventpost-datepicker-native" id="eventpost_native_date" value="<?php echo esc_attr($now); ?>">
 			</p>
 		</div>
 		<?php
@@ -579,7 +579,7 @@ class Settings{
 		$ep_settings = EventPost()->settings;
 		?>
 		<div class="wrap">
-			<h2><?php _e('Events settings', 'event-post'); ?></h2>
+			<h2><?php esc_html_e('Events settings', 'event-post'); ?></h2>
 			<form action="options.php" method="post">
 			<?php settings_fields( 'eventpost-settings' ); ?>
 			<?php do_settings_sections('eventpost-settings'); ?>

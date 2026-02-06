@@ -3,7 +3,7 @@
  * Plugin Name: Event Post
  * Plugin URI: https://event-post.com?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=plugin-uri
  * Description: Add calendar and/or geolocation metadata on any posts.
- * Version: 5.10.4
+ * Version: 5.11.0
  * Author: N.O.U.S. Open Useful and Simple
  * Contributors: bastho, sabrinaleroy, unecologeek, agencenous
  * Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=author
@@ -1608,7 +1608,7 @@ class EventPost {
 	 * @return void
 	 */
 	public function print_single($post = null) {
-		echo $this->get_single($post);
+		echo wp_kses_post($this->get_single($post));
 	}
 
 	/**
@@ -2390,7 +2390,7 @@ class EventPost {
 					<label class="inline-edit-group">
 						<span class="title"><?php echo esc_html($fieldlabel); ?></span>
 						<span class="input-text-wrap">
-							<?php echo $this->inline_field($fieldname, $bulk); ?>
+							<?php echo wp_kses($this->inline_field($fieldname, $bulk), $this->kses_tags); ?>
 						</span>
 					</label>
 				  </div>
@@ -3155,7 +3155,7 @@ class EventPost {
 				exit;
 			}
 		}
-		wp_die(__('Invalid request.', 'event-post'));
+		wp_die(esc_html__('Invalid request.', 'event-post'));
 	}
 	
 
@@ -3180,74 +3180,117 @@ class EventPost {
 
 	/**
 	 * Outputs an ICS document
+	 * 
+	 * Filters can be applied to the criteria used to retrieve events in GET parameters:
+	 * - cat : category slug
+	 * - tag : tag slug
+	 * - tax_name : custom taxonomy name
+	 * - tax_term : custom taxonomy term slug
+	 * - nb : number of events to retrieve (default 10)
+	 * - future : retreive future events
+	 * - past : retreive past events
+	 * 
+	 * @return void
 	 */
 	public function feed(){
+		$criteria = array(
+			'nb'=>10,
+		);
 		if(false !== $cat=\filter_input(INPUT_GET, 'cat')){
-			$vtz = get_option('timezone_string');
-				$gmt = $this->get_gmt_offset();
-			date_default_timezone_set($vtz);
-				$separator = "\n";
-
-			header("content-type:text/calendar");
-			header("Pragma: public");
-			header("Expires: 0");
-			header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-			header("Cache-Control: public");
-			header("Content-Disposition: attachment; filename=". str_replace('+','-',rawurlencode(get_option('blogname').'-'.$cat)).".ics;" );
-
-				$props = array();
-
-				// General
-				$props[] =  'BEGIN:VCALENDAR';
-				$props[] =  'PRODID://WordPress//Event-Post-V'.$this->version.'//EN';
-				$props[] =  'VERSION:2.0';
-				// Timezone
-				if(!empty($vtz)){
-					array_push($props,
-						'BEGIN:VTIMEZONE',
-						'TZID:'.$vtz,
-						'BEGIN:DAYLIGHT',
-						'TZOFFSETFROM:+0100',
-						'TZOFFSETTO:'.($gmt).'00',
-						'DTSTART:19700329T020000',
-						'RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3',
-						'END:DAYLIGHT',
-						'BEGIN:STANDARD',
-						'TZOFFSETFROM:'.($gmt).'00',
-						'TZOFFSETTO:+0100',
-						'TZNAME:CET',
-						'DTSTART:19701025T030000',
-						'RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10',
-						'END:STANDARD',
-						'END:VTIMEZONE'
-					);
-				}
-
-				// Events
-				$events=$this->get_events(array('cat'=>$cat,'nb'=>-1));
-			foreach ($events as $event) {
-				if($event->time_start && $event->time_end){
-					array_push($props,
-						'BEGIN:VEVENT',
-						'CREATED:'.$this->ics_date(strtotime($event->post_date)).'Z',
-						'LAST-MODIFIED:'.$this->ics_date(strtotime($event->post_modified)).'Z',
-						'SUMMARY:'.$event->post_title,
-						'UID:'.md5(site_url()."_eventpost_".$event->ID),
-						'LOCATION:'.str_replace(',','\,',$event->address),
-						'DTSTAMP:'.$this->ics_date($event->time_start).(!empty($vtz)?'':'Z'),
-						'DTSTART'.(!empty($vtz)?';TZID='.$vtz:'').':'.$this->ics_date($event->time_start).(!empty($vtz)?'':'Z'),
-						'DTEND'.(!empty($vtz)?';TZID='.$vtz:'').':'.$this->ics_date($event->time_end).(!empty($vtz)?'':'Z'),
-						'DESCRIPTION:'.trim(chunk_split($event->description."\\n\\n".$event->permalink, 60, "\n ")),
-						'END:VEVENT'
-					);
-				}
-			}
-
-			// End
-			$props[] =  'END:VCALENDAR';
-
-			echo esc_html(implode($separator, $props));
-			exit;
+			$criteria['cat'] = sanitize_text_field($cat);
 		}
+		if(false !== $tag=\filter_input(INPUT_GET, 'tag')){
+			$criteria['tag'] = sanitize_text_field($tag);
+		}
+		if(false !== $tax_name=\filter_input(INPUT_GET, 'tax_name')){
+			$criteria['tax_name'] = sanitize_text_field($tax_name);
+		}
+		if(false !== $tax_term=\filter_input(INPUT_GET, 'tax_term')){
+			$criteria['tax_term'] = sanitize_text_field($tax_term);
+		}
+		if(false !== $nb=\filter_input(INPUT_GET, 'nb', FILTER_SANITIZE_NUMBER_INT)){
+			$criteria['nb'] = sanitize_text_field($nb);
+		}
+		if(false !== $future=\filter_input(INPUT_GET, 'future', FILTER_SANITIZE_NUMBER_INT)){
+			$criteria['future'] = sanitize_text_field($future);
+		}
+		if(false !== $past=\filter_input(INPUT_GET, 'past', FILTER_SANITIZE_NUMBER_INT)){
+			$criteria['past'] = sanitize_text_field($past);
+		}
+		$vtz = get_option('timezone_string');
+		$gmt = $this->get_gmt_offset();
+		date_default_timezone_set($vtz);
+		$separator = "\n";
+
+		header("content-type:text/calendar");
+		header("Pragma: public");
+		header("Expires: 0");
+		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+		header("Cache-Control: public");
+		header("Content-Disposition: attachment; filename=". str_replace('+','-',rawurlencode(get_option('blogname').'-'.$cat)).".ics;" );
+
+		$props = array();
+
+		// General
+		$props[] =  'BEGIN:VCALENDAR';
+		$props[] =  'PRODID://WordPress//Event-Post-V'.$this->version.'//EN';
+		$props[] =  'VERSION:2.0';
+		// Timezone
+		if(!empty($vtz)){
+			array_push($props,
+				'BEGIN:VTIMEZONE',
+				'TZID:'.$vtz,
+				'BEGIN:DAYLIGHT',
+				'TZOFFSETFROM:+0100',
+				'TZOFFSETTO:'.($gmt).'00',
+				'DTSTART:19700329T020000',
+				'RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3',
+				'END:DAYLIGHT',
+				'BEGIN:STANDARD',
+				'TZOFFSETFROM:'.($gmt).'00',
+				'TZOFFSETTO:+0100',
+				'TZNAME:CET',
+				'DTSTART:19701025T030000',
+				'RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10',
+				'END:STANDARD',
+				'END:VTIMEZONE'
+			);
+		}
+
+		// Events
+		$events=$this->get_events($criteria);
+		foreach ($events as $event) {
+			if($event->time_start && $event->time_end){
+				$description = wordwrap(
+					str_replace(
+						['\\', ';', ',', "\r", "\n"],
+						['\\\\', '\;', '\,', '', '\n'],
+						wp_strip_all_tags($event->description . "\n\n" . $event->permalink)
+					),
+					70,
+					"\n ",
+					true
+				);
+				array_push($props,
+					'BEGIN:VEVENT',
+					'CREATED:'.$this->ics_date(strtotime($event->post_date)).'Z',
+					'LAST-MODIFIED:'.$this->ics_date(strtotime($event->post_modified)).'Z',
+					'SUMMARY:'.$event->post_title,
+					'UID:'.md5(site_url()."_eventpost_".$event->ID),
+					'LOCATION:'.str_replace(',','\,',$event->address),
+					'DTSTAMP:'.$this->ics_date($event->time_start).(!empty($vtz)?'':'Z'),
+					'DTSTART'.(!empty($vtz)?';TZID='.$vtz:'').':'.$this->ics_date($event->time_start).(!empty($vtz)?'':'Z'),
+					'DTEND'.(!empty($vtz)?';TZID='.$vtz:'').':'.$this->ics_date($event->time_end).(!empty($vtz)?'':'Z'),
+					'DESCRIPTION:'.$description,
+					'END:VEVENT'
+				);
+			}
+		}
+
+		// End
+		$props[] =  'END:VCALENDAR';
+
+		echo esc_html(implode($separator, $props));
+		exit;
 	}
 }

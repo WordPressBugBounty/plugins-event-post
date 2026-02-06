@@ -3,7 +3,7 @@
  * ICS Export
  * 
  * @package event-post
- * @version 5.10.4
+ * @version 5.11.0
  * @since   5.4
  */
 
@@ -70,5 +70,5 @@ if(isset($event->post_title) && isset($event->time_start) && isset($event->time_
 		// End
 		$props[] =  'END:VCALENDAR';
 
-	echo implode($separator, $props);
+	echo wp_kses_post(implode($separator, $props));
 }

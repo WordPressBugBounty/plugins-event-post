@@ -3,7 +3,7 @@
  * Shortcuts for useful functions in templates
  * 
  * @package event-post
- * @version 5.10.4
+ * @version 5.11.0
  * @since   5.0.0
  */
 
@@ -46,7 +46,7 @@ if(!function_exists('the_dates')){
      * @param mixte $post
      */
     function the_dates($post=null){
-        echo get_the_dates($post);
+        echo wp_kses(get_the_dates($post), EventPost()->kses_tags);
     }
 }
 
@@ -73,7 +73,7 @@ if(!function_exists('the_date_start')){
      * @param type $post
      */
     function the_date_start($post=null){
-        echo get_the_date_start($post);
+        echo wp_kses(get_the_date_start($post), EventPost()->kses_tags);
     }
 }
 
@@ -104,7 +104,7 @@ if(!function_exists('the_date_end')){
      * @return string
      */
     function the_date_end($post=null){
-        echo get_the_date_end($post);
+        echo wp_kses(get_the_date_end($post), EventPost()->kses_tags);
     }
 }
 
@@ -130,6 +130,6 @@ if(!function_exists('the_location')){
      * @param type $post
      */
     function the_location($post=null){
-        echo get_the_location($post);
+        echo wp_kses(get_the_location($post), EventPost()->kses_tags);
     }
 }

@@ -3,7 +3,7 @@
  * Weather support
  * 
  * @package event-post
- * @version 5.10.4
+ * @version 5.11.0
  * @since   4.3.0
  */
 
@@ -102,51 +102,52 @@ class Weather {
      */
     function settings_form($ep_settings) {
         ?>
-        <h2><?php _e('Weather', 'event-post'); ?></h2>
+        <h2><?php esc_html_e('Weather', 'event-post'); ?></h2>
         <?php  // Translators: %s is a link to openweathermap.org ?>
-        <p class="description"><?php printf(__('Provided thanks to %s', 'event-post'), '<a href="http://openweathermap.org" target="_blank">openweathermap.org</a>'); ?></p>
+        <p class="description"><?php printf(esc_html(__('Provided thanks to %s', 'event-post')), '<a href="http://openweathermap.org" target="_blank">openweathermap.org</a>'); ?></p>
         <table class="form-table" id="eventpost-settings-table-weather">
             <tbody>
                 <tr>
                     <th>
-                        <?php _e('Enable weather', 'event-post') ?>
+                        <?php esc_html_e('Enable weather', 'event-post') ?>
                     </th>
                     <td>
                         <label for="weather_enabled">
                             <input type="checkbox" name="ep_settings[weather_enabled]" id="weather_enabled" <?php if ($ep_settings['weather_enabled'] == '1') {
-                            echo'checked';
+                            echo esc_attr('checked');
                         } ?> value="1">
-        <?php _e('Enable weather feature', 'event-post') ?>
+        <?php esc_html_e('Enable weather feature', 'event-post') ?>
                         </label>
                     </td>
                 </tr>
                 <tr>
                     <th>
                         <label for="weather_api_key">
-        <?php _e('API key', 'event-post') ?>
+        <?php esc_html_e('API key', 'event-post') ?>
                         </label>
                     </th>
                     <td>
-                        <input type="text" name="ep_settings[weather_api_key]" id="weather_api_key" value="<?php echo $ep_settings['weather_api_key']; ?>" size="40">
-                        <p class="description"><?php printf(__('Get a free API key at: %s', 'event-post'), '<a href="http://openweathermap.org/appid#get" target="_blank">openweathermap.org/appid#get</a>'); ?></p>
+                        <input type="text" name="ep_settings[weather_api_key]" id="weather_api_key" value="<?php echo esc_attr($ep_settings['weather_api_key']); ?>" size="40">
+                        <?php // Translators: %s is a link to openweathermap.org/appid#get ?>
+                        <p class="description"><?php printf(esc_html(__('Get a free API key at: %s', 'event-post')), '<a href="http://openweathermap.org/appid#get" target="_blank">openweathermap.org/appid#get</a>'); ?></p>
                     </td>
                 </tr>
                 <tr>
                     <th>
                         <label for="weather_units">
-                            <?php _e('Units', 'event-post') ?>
+                            <?php esc_html_e('Units', 'event-post') ?>
                         </label>
                     </th>
                     <td>
                         <select name="ep_settings[weather_units]" id="weather_units">
                             <option value="standard" <?php selected($ep_settings['weather_units'], 'standard', true);?>>
-                                <?php _e('Standard (Fahrenheit)', 'event-post') ?>
+                                <?php esc_html_e('Standard (Fahrenheit)', 'event-post') ?>
                             </option>
                             <option value="metric" <?php selected($ep_settings['weather_units'], 'metric', true);?>>
-                                <?php _e('Metric (Celsius)', 'event-post') ?>
+                                <?php esc_html_e('Metric (Celsius)', 'event-post') ?>
                             </option>
                             <option value="imperial" <?php selected($ep_settings['weather_units'], 'imperial', true);?>>
-                                <?php _e('Imperial (Kelvin)', 'event-post') ?>
+                                <?php esc_html_e('Imperial (Kelvin)', 'event-post') ?>
                             </option>
                         </select>
                     </td>
@@ -262,7 +263,8 @@ class Weather {
         foreach((array) $weather as $item){
             $text = ucfirst(__(strtolower($item->description), 'event-post'));
             $string.='<span class="eventpost-weather-'.str_replace('-', '', strtolower($item->description)).' eventpost-weather-'.$item->icon.'">'
-                    . '<img src="'. plugins_url('../img/weather/'.$this->theme.'/'.$item->icon.'.png', __FILE__).'" alt="'.sprintf('%s icon', $text).'">'
+            // Translators: %s is the weather description        
+            . '<img src="'. plugins_url('../img/weather/'.$this->theme.'/'.$item->icon.'.png', __FILE__).'" alt="'.sprintf('%s icon', $text).'">'
                     . '<em class="eventpost-weather-text">'.$text.'</em>'
                     . '</span>';
         }
@@ -330,7 +332,7 @@ class Weather {
                 break;
         }
         if($echo){
-            echo $string;
+            echo wp_kses($string, EventPost()->kses_tags);
         }
         return $string;
     }

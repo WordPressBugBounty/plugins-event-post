@@ -3,7 +3,7 @@
  * Manage sub events
  * 
  * @package event-post
- * @version 5.10.4
+ * @version 5.11.0
  * @since   4.3
  */
 
@@ -321,13 +321,13 @@ class Children{
         }
 
         ?>
-        <div class="notice-<?php echo $notices[$notice][0]; ?>"><p><?php echo $notices[$notice][1]; ?></p></div>
+        <div class="notice-<?php echo esc_attr($notices[$notice][0]); ?>"><p><?php echo wp_kses_post($notices[$notice][1]); ?></p></div>
         <?php
     }
 
     function check_admin_legitimity(){
         if (!wp_verify_nonce(filter_input(INPUT_GET, 'eventpost_children_nonce'), 'eventpost_children_nonce') ){
-            wp_die(__('Invalid link', 'event-post'));
+            wp_die(esc_html__('Invalid link', 'event-post'));
     	}
     }
 
@@ -340,7 +340,7 @@ class Children{
         $this->check_admin_legitimity();
 
         if(false === $post_id = filter_input(INPUT_GET, 'post_id', FILTER_SANITIZE_NUMBER_INT)){
-            wp_die(__('No post ID given...', 'event-post'));
+            wp_die(esc_html__('No post ID given...', 'event-post'));
         }
 
         if(false !== $child_id = $this->_add_child($post_id)){
@@ -374,10 +374,10 @@ class Children{
     function delete_child_admin_post(){
         $this->check_admin_legitimity();
         if(false === $post_id = filter_input(INPUT_GET, 'post_id', FILTER_SANITIZE_NUMBER_INT)){
-            wp_die(__('No post ID given...', 'event-post'));
+            wp_die(esc_html__('No post ID given...', 'event-post'));
         }
         if(false === $child_id = filter_input(INPUT_GET, 'child_id', FILTER_SANITIZE_NUMBER_INT)){
-            wp_die(__('No child ID given...', 'event-post'));
+            wp_die(esc_html__('No child ID given...', 'event-post'));
         }
 
         if(false !== $this->_delete_child($child_id)){
@@ -396,32 +396,32 @@ class Children{
      */
     function settings_form($ep_settings) {
         ?>
-        <h2><?php _e('Multi dates', 'event-post'); ?></h2>
+        <h2><?php esc_html_e('Multi dates', 'event-post'); ?></h2>
         <table class="form-table" id="eventpost-settings-table-children">
             <tbody>
                 <tr>
                     <th>
-                        <?php _e('Enable children events', 'event-post') ?>
+                        <?php esc_html_e('Enable children events', 'event-post') ?>
                     </th>
                     <td>
                         <label for="children_enabled">
                             <input type="checkbox" name="ep_settings[children_enabled]" id="children_enabled" <?php if ($ep_settings['children_enabled'] == '1') {
-                            echo'checked';
+                            echo esc_attr('checked');
                         } ?> value="1">
-        <?php _e('Allow event post to create children to events', 'event-post') ?>
+        <?php esc_html_e('Allow event post to create children to events', 'event-post') ?>
                         </label>
                     </td>
                 </tr>
                 <tr>
                     <th>
-                        <?php _e('Synchronize taxonomies', 'event-post') ?>
+                        <?php esc_html_e('Synchronize taxonomies', 'event-post') ?>
                     </th>
                     <td>
                         <label for="children_sync_tax">
                             <input type="checkbox" name="ep_settings[children_sync_tax]" id="children_sync_tax" <?php if ($ep_settings['children_sync_tax'] == '1') {
-                            echo'checked';
+                            echo esc_attr('checked');
                         } ?> value="1">
-        <?php _e('Make children herit all taxonomies (categories, tags, custom taxonomies...) from the original event.', 'event-post') ?>
+        <?php esc_html_e('Make children herit all taxonomies (categories, tags, custom taxonomies...) from the original event.', 'event-post') ?>
                         </label>
                     </td>
                 </tr>
@@ -443,7 +443,7 @@ class Children{
             <a href="<?php echo admin_url('post.php?post='.$parent->ID.'&action=edit'); ?>" class="button button-default">
                 <i class="dashicons dashicons-arrow-left-alt"></i>
                 <?php // translators: %s represents the parent post title ?>
-                <strong><?php printf(__('Back to %s', 'event-post'), esc_attr($parent->post_title)); ?></strong>
+                <strong><?php printf(esc_html__('Back to %s', 'event-post'), esc_html($parent->post_title)); ?></strong>
             </a>
             <?php
         }
@@ -463,8 +463,8 @@ class Children{
         <ul id="eventpost-children-list">
             <?php foreach ($children as $child): ?>
             <li>
-                <?php echo $EventPost->get_singledate($child); ?>
-                <?php echo $EventPost->get_singleloc($child); ?>
+                <?php echo wp_kses($EventPost->get_singledate($child), EventPost()->kses_tags); ?>
+                <?php echo wp_kses($EventPost->get_singleloc($child), EventPost()->kses_tags); ?>
                 <a class="button button-default eventpost-children-edit" href="<?php echo admin_url('post.php?post='.$child->ID.'&action=edit'); ?>" title="<?php _e('Edit child event', 'event-post'); ?>">
                     <i class="dashicons dashicons-edit"></i>
                 </a>
@@ -476,7 +476,7 @@ class Children{
         </ul>
         <a class="button button-default eventpost-children-add" href="<?php echo wp_nonce_url(admin_url('admin-post.php?action=EventPostAddChild&post_id='.$post_id), 'eventpost_children_nonce', 'eventpost_children_nonce'); ?>">
             <i class="dashicons dashicons-plus"></i>
-            <?php _e('Add child event', 'event-post'); ?>
+            <?php esc_html_e('Add child event', 'event-post'); ?>
         </a>
         <?php
     }
@@ -502,7 +502,7 @@ class Children{
     public function columns_content($column_name, $post_id) {
         if ($column_name == 'children_events') {
             $nb = count($this->get($post_id));
-            echo $nb ? '<p align="center">'.$nb.'</p>' : '';
+            echo $nb ? '<p align="center">'.esc_html($nb).'</p>' : '';
         }
     }
 

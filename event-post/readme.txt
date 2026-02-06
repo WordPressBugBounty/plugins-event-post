@@ -241,6 +241,12 @@ You can also subscribe to paid plan, I don't care.
 4. Editor interface for location data
 ## Changelog
 
+### 5.11.0
+
+- More flexible filters in ICS links: allows to deal with custom taxonomies
+- ICS: Improve DESCRIPTION formatting for better calendar compatibility
+- Security: Escape some outputs
+
 ### 5.10.4
 
 - Fix geocoding with Nominatim: use HTTPS, add User-agent and referer for API calls

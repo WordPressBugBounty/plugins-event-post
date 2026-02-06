@@ -3,7 +3,7 @@
  * Search result
  *
  * @package event-post
- * @version 5.10.4
+ * @version 5.11.0
  * @since   5.0.0
  */
 ?>
@@ -11,7 +11,7 @@
     <?php if($events->have_posts()): ?>
     <span class="eventpost-search-item-count">
         <?php // translators: %d is the number of events found ?>
-        <?php printf(_n('%d event found', '%d events found', $events->post_count, 'event-post'), $events->post_count); ?>
+        <?php echo esc_html(sprintf(_n('%d event found', '%d events found', $events->post_count, 'event-post'), $events->post_count)); ?>
     </span>
     <hr>
     <?php while($events->have_posts()): $events->the_post(); ?>
@@ -26,6 +26,6 @@
     </article>
         <?php endwhile; ?>
     <?php else: ?>
-        <?php _e('Sorry, there is no event matching your request.', 'event-post'); ?>
+        <?php esc_html_e('Sorry, there is no event matching your request.', 'event-post'); ?>
     <?php endif; ?>
 </div>

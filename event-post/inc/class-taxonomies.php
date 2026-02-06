@@ -3,7 +3,7 @@
  * Taxonomies
  * 
  * @package event-post
- * @version 5.10.4
+ * @version 5.11.0
  * @since   5.6
  */
 
@@ -41,10 +41,10 @@ class Taxonomies{
     $fields = $this->get_fields(false);
     foreach($fields as $field => $components){
       ?>
-      <div class="form-field event-color-section <?php echo $field ?>-wrap">
-        <?php echo $components['label']?>
-        <?php echo $components['field']?>
-      	<p><?php echo $components['desc'] ?></p>
+      <div class="form-field event-color-section <?php echo esc_attr($field) ?>-wrap">
+        <?php echo wp_kses($components['label'], EventPost()->kses_tags)?>
+        <?php echo wp_kses($components['field'], EventPost()->kses_tags)?>
+      	<p><?php echo esc_html($components['desc']) ?></p>
       </div>
       <?php
     }
@@ -82,13 +82,13 @@ class Taxonomies{
     $fields = $this->get_fields($term);
     foreach($fields as $field => $components){
       ?>
-      <tr class='form-field <?php echo $field ?>-wrap'>
+      <tr class='form-field <?php echo esc_attr($field) ?>-wrap'>
         <th scope='row' valign='top'>
-          <?php echo $components['label']?>
+          <?php echo wp_kses($components['label'], EventPost()->kses_tags)?>
         </th>
         <td>
-          <?php echo $components['field']?>
-          <p class='description'><?php echo $components['desc'] ?></p>
+          <?php echo wp_kses($components['field'], EventPost()->kses_tags); ?>
+          <p class='description'><?php echo esc_html($components['desc']) ?></p>
         </td>
       </tr>
       <?php
@@ -113,7 +113,7 @@ class Taxonomies{
   	if ($column_name === 'event_post_style') {
       $icon = $this->get_taxonomy_icon($term_id, "location");
       $color = $this->get_taxonomy_color($term_id, "#000000");
-  		echo '<span class="dashicons dashicons-'.$icon.'" style="color : #'.$color.'"></span>';
+  		echo '<span class="dashicons dashicons-'.esc_attr($icon).'" style="color : #'.esc_attr($color).'"></span>';
   	}
   	return $content;
   }
