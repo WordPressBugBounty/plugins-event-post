@@ -3,7 +3,7 @@
  * Search result
  *
  * @package event-post
- * @version 5.11.0
+ * @version 5.11.1
  * @since   5.0.0
  */
 ?>
