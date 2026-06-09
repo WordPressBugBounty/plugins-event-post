@@ -3,7 +3,7 @@
  * Multisite management
  * 
  * @package event-post
- * @version 5.11.1
+ * @version 5.12.0
  * @since   4.3
  */
 

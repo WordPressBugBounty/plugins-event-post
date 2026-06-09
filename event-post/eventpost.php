@@ -3,7 +3,7 @@
  * Plugin Name: Event Post
  * Plugin URI: https://event-post.com?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=plugin-uri
  * Description: Add calendar and/or geolocation metadata on any posts.
- * Version: 5.11.1
+ * Version: 5.12.0
  * Author: N.O.U.S. Open Useful and Simple
  * Contributors: bastho, sabrinaleroy, unecologeek, agencenous
  * Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=author
@@ -2975,6 +2975,52 @@ class EventPost {
 	}
 
 	/**
+	 * Geocodes an address using OpenStreetMap Nominatim API and cache the result in a transient for 30 days
+	 * 
+	 * @param string $address
+	 * @param boolean $single_result Whether to return only the first result or all results
+	 * 
+	 * @return array|false|string The geocoding result(s) or false on failure
+	 */
+	public function geocode(string $address, bool $single_result = false){
+		$transient_name = 'eventpost_osquery_' . $address;
+		$val = get_transient($transient_name);
+		if (false === $val || empty($val) || !is_string($val)) {
+			$language = get_bloginfo('language');
+			if (strpos($language, '-') > -1) {
+				$language = strtolower(substr($language, 0, 2));
+			}
+			$remote_val = wp_safe_remote_request('https://nominatim.openstreetmap.org/search?q=' . rawurlencode($address) . '&format=json&accept-language=' . $language, [
+				'user-agent' => getenv('HTTP_USER_AGENT') ?? 'WordPress/' . get_bloginfo('version') . '; ' . get_bloginfo('url'),
+				'headers' => [
+					'Referer' => get_bloginfo('url'),
+				],
+				'timeout' => 5,
+			]);
+			$remote_body = wp_remote_retrieve_body($remote_val);
+			if(strstr($remote_body, '<html>')){
+				$val = [
+					[
+						'lat' => '',
+						'lon' => '',
+						'display_name' => strip_tags($remote_body),
+					]
+				];
+			}
+			else{
+				$val = json_decode($remote_body);
+				if($val){
+					set_transient($transient_name, $val, 30 * DAY_IN_SECONDS);
+				}
+			}
+		}
+		if($single_result && is_array($val) && count($val) > 0){
+			$val = $val[0];
+		}
+		return $val;
+	}
+
+	/**
 	 * AJAX Get lat long from address
 	 */
 	public function GetLatLong() {
@@ -2982,37 +3028,7 @@ class EventPost {
 			// verifier le cache
 			$q = $_REQUEST['q'];
 			header('Content-Type: application/json');
-			$transient_name = 'eventpost_osquery_' . $q;
-			$val = get_transient($transient_name);
-			if (false === $val || empty($val) || !is_string($val)) {
-				$language = get_bloginfo('language');
-				if (strpos($language, '-') > -1) {
-					$language = strtolower(substr($language, 0, 2));
-				}
-				$remote_val = wp_safe_remote_request('https://nominatim.openstreetmap.org/search?q=' . rawurlencode($q) . '&format=json&accept-language=' . $language, [
-					'user-agent' => getenv('HTTP_USER_AGENT') ?? 'WordPress/' . get_bloginfo('version') . '; ' . get_bloginfo('url'),
-					'headers' => [
-						'Referer' => get_bloginfo('url'),
-					],
-					'timeout' => 5,
-				]);
-				$remote_body = wp_remote_retrieve_body($remote_val);
-				if(strstr($remote_body, '<html>')){
-					$val = [
-						[
-							'lat' => '',
-							'lon' => '',
-							'display_name' => strip_tags($remote_body),
-						]
-					];
-				}
-				else{
-					$val = json_decode($remote_body);
-					if($val){
-						set_transient($transient_name, $val, 30 * DAY_IN_SECONDS);
-					}
-				}
-			}
+			$val = $this->geocode($q);
 			wp_send_json( $val );
 			exit();
 		}

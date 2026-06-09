@@ -2,7 +2,7 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 2,
   "name": "eventpost/map",
-  "version": "5.11.1",
+  "version": "5.12.0",
   "title": "Events Map",
   "category": "widgets",
   "icon": "location-alt",
@@ -82,6 +82,42 @@
     },
     "longitude": {
       "type": "string"
+    },
+    "DragRotate": {
+      "type": "boolean",
+      "default": true
+    },
+    "DoubleClickZoom": {
+      "type": "boolean",
+      "default": true
+    },
+    "DragPan": {
+      "type": "boolean",
+      "default": true
+    },
+    "PinchRotate": {
+      "type": "boolean",
+      "default": true
+    },
+    "PinchZoom": {
+      "type": "boolean",
+      "default": true
+    },
+    "KeyboardPan": {
+      "type": "boolean",
+      "default": true
+    },
+    "KeyboardZoom": {
+      "type": "boolean",
+      "default": true
+    },
+    "MouseWheelZoom": {
+      "type": "boolean",
+      "default": true
+    },
+    "DragZoom": {
+      "type": "boolean",
+      "default": true
     }
   },
   "textdomain": "eventpost",
