@@ -3,7 +3,7 @@
  * Plugin Name: Event Post
  * Plugin URI: https://event-post.com?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=plugin-uri
  * Description: Add calendar and/or geolocation metadata on any posts.
- * Version: 5.12.0
+ * Version: 6.0.0
  * Author: N.O.U.S. Open Useful and Simple
  * Contributors: bastho, sabrinaleroy, unecologeek, agencenous
  * Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=author
@@ -14,6 +14,9 @@
  *
  * @package event-post
  */
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
+
 global $EventPost;
 $EventPost = new EventPost();
 
@@ -1519,8 +1522,8 @@ class EventPost {
 			$datas_loc = $this->print_location($post, $context);
 			$classes = array(
 				'event_data',
-				'status-'.$post->status,
-				'location-type-'.$post->attendance_mode,
+				'status-'.strtolower(str_replace('Event', '', $event->status)),
+				'location-type-'.strtolower(str_replace('EventAttendanceMode', '', $event->attendance_mode)),
 				$class
 			);
 			if ($datas_date != '' || $datas_loc != '') {
@@ -1711,11 +1714,14 @@ class EventPost {
 			'orderby' => 'meta_value',
 			'order' => 'ASC',
 			'class' => '',
+			'align' => '',
 			'className' => '',
 			'container_schema' => $this->list_shema['container'],
 			'item_schema' => $this->list_shema['item'],
 			'pages' => false,
 			'paged' => '',
+            'separate_years' => false,
+            'separate_months' => false,
 		);
 		// Map UI options
 		foreach($this->map_interactions as $int_key=>$int_name){
@@ -1727,7 +1733,7 @@ class EventPost {
 			$atts['nb'] = 0;
 		}
 
-		$atts = shortcode_atts(apply_filters('eventpost_params', $defaults, 'list_events'), $atts);
+		$atts = shortcode_atts(apply_filters('eventpost_params', $defaults, 'list_events', $context), $atts);
 
 		extract($atts);
 		if (!is_array($events)) {
@@ -1763,18 +1769,31 @@ class EventPost {
 				$attributes .= ' data-nb="'.$atts_old_nb.'" data-filter="'.http_build_query($atts).'" ';
 			}
 
+			if($id === 'event_timeline'){
+				$previous_year = $atts['separate_years'] ? true : false;
+				$previous_month = $atts['separate_months'] ? true : false;
+			}
+
 			foreach ($events as $event) {
+				if($previous_year && $previous_year !== date('Y', $event->time_start)){
+					$html.= '<div class="event-timeline-separator event-timeline-year"><span class="event-timeline-year-text">'.date_i18n('Y', $event->time_start).'</span></div>';
+					$previous_year = date('Y', $event->time_start);
+				}
+				if($previous_month && $previous_month !== date('Ym', $event->time_start)){
+					$html.= '<div class="event-timeline-separator event-timeline-month"><span class="event-timeline-month-text">'.date_i18n('F', $event->time_start).'</span>'.($previous_year ? '' : ' <span class="event-timeline-year-text">'.date_i18n('Y', $event->time_start).'</span>').'</div>';
+					$previous_month = date('Ym', $event->time_start);
+				}
 				$text_price = $this->get_price($event,true);
 				$class_item = array(
 					$this->is_future($event) ? 'event_future' : 'event_past',
-					'status-'.$event->status,
-					'location-type-'.$event->attendance_mode,
+					'status-'.strtolower(str_replace('Event', '', $event->status)),
+					'location-type-'.strtolower(str_replace('EventAttendanceMode', '', $event->attendance_mode)),
 				);
 				$taxonomies= get_taxonomies('','names');
 				$post_terms = [];
 				$terms = wp_get_post_terms($event->ID, $taxonomies);
 				foreach($terms as $term){
-					$class_item[] = $term->taxonomy.'-'.$term->name;
+					$class_item[] = $term->taxonomy.'-'.$term->slug;
 				}
 				if ($ep_settings['emptylink'] == 0 && empty($event->post_content)) {
 					$event->permalink = '#' . $id . $this->list_id;
@@ -1853,6 +1872,18 @@ class EventPost {
 			if($context == 'events_only'){
 				$ret = $html;
 			}else{
+				$classes = [
+					$class,
+					$className,
+					'className',
+					$id == 'event_geolist' && $list ? ' has-list list-'.esc_attr($list) : ' no-list',
+				];
+				if(!empty($align)){
+					$classes[] = 'align'.esc_attr($align);
+				}
+				if($previous_year || $previous_month){
+					$classes[] = 'has-time-separators';
+				}
 				$ret.=str_replace(
 						array(
 					'%type%',
@@ -1869,7 +1900,7 @@ class EventPost {
 						), array(
 					$type,
 					$id,
-					$class.($className ? ' '.esc_attr($className) : '').($id == 'event_geolist' && $list ? ' has-list list-'.esc_attr($list) : ' no-list'),
+					esc_attr(implode(' ', $classes)),
 					$id . $this->list_id,
 					(!empty($width) ? 'width:' . esc_attr($width) . ';' : '') . (!empty($height) ? 'height:' . esc_attr($height) . ';' : '') . esc_attr($style),
 					$attributes,
@@ -2342,7 +2373,7 @@ class EventPost {
 				<?php
 					foreach($this->DashIcons->icons as $class => $unicode){
 						?>
-							<option value="<?php echo esc_attr($class) ?>" <?php selected($value_icon, $class, true); ?>>&#x<?php esc_attr_e($unicode) ?>; <?php echo esc_html($class) ?></option>
+							<option value="<?php echo esc_attr($class) ?>" <?php selected($value_icon, $class, true); ?>>&#x<?php esc_attr_e($unicode) ?>; <?php echo esc_html($class) ?></option><?php // phpcs:ignore WordPress.WP.I18n ?>
 						<?php
 					}
 				?>

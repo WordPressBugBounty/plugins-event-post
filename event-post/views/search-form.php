@@ -3,9 +3,11 @@
  * Search form for event posts
  * 
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   5.0.0
  */
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
 ?>
 <form class="eventpost-search-form" id="eventpost-search-form-<?php echo esc_attr($list_id); ?>">
     <input type="hidden" name="evenpost_search" value="<?php echo esc_attr($list_id); ?>">

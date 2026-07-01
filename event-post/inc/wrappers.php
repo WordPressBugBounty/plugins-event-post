@@ -3,9 +3,11 @@
  * Shortcuts for useful functions in templates
  * 
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   5.0.0
  */
+
+ if ( ! defined( 'ABSPATH' ) ) exit; 
 
 if(!function_exists('get_the_dates')){
     /**

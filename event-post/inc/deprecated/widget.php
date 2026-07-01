@@ -4,6 +4,9 @@
   * @deprecated
   * @package event-post
   */
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
+
 class EventPost_List extends WP_Widget {
     var $defaults;
    function __construct() {
@@ -62,6 +65,7 @@ class EventPost_List extends WP_Widget {
             echo $instance['widgettitle'];
             if(!empty($instance['cat']) && $instance['feed']){
                 $feed_url = esc_url(admin_url('admin-ajax.php') . '?action=EventPostFeed&cat=' . $instance['cat']);
+                // Translators: %s is the category name
                 echo' <a href="'.$feed_url .'" title="'.sprintf(__('feed of %s', 'event-post'), $instance['cat']).'"><span class="dashicons dashicons-rss"></span></a>';
             }
             echo $args['after_title'];

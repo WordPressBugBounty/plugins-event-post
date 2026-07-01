@@ -3,11 +3,13 @@
  * Weather support
  * 
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   4.3.0
  */
 
 namespace EventPost;
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
 
 $EventPostWeather = new Weather();
 
@@ -261,7 +263,7 @@ class Weather {
     function get_weather_icons($weather){
         $string = '';
         foreach((array) $weather as $item){
-            $text = ucfirst(__(strtolower($item->description), 'event-post'));
+            $text = ucfirst(__(strtolower($item->description), 'event-post')); // phpcs:ignore WordPress.WP.I18n
             $string.='<span class="eventpost-weather-'.str_replace('-', '', strtolower($item->description)).' eventpost-weather-'.$item->icon.'">'
             // Translators: %s is the weather description        
             . '<img src="'. plugins_url('../img/weather/'.$this->theme.'/'.$item->icon.'.png', __FILE__).'" alt="'.sprintf('%s icon', $text).'">'

@@ -3,9 +3,11 @@
  * VCS Export
  *
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   5.4
  */
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
 
 $mime='x-vcalendar';
 $format='vcs';

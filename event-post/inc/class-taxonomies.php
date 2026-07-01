@@ -3,11 +3,13 @@
  * Taxonomies
  * 
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   5.6
  */
 
 namespace EventPost;
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
 
 class Taxonomies{
   private $META_COLOR = 'taxonomy_color';

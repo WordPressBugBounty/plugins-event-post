@@ -3,11 +3,13 @@
  * Implements all shortcodes features
  *
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   5.0.0
  */
 
 namespace EventPost;
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
 
 class Shortcodes{
 
@@ -151,6 +153,7 @@ class Shortcodes{
             'pages' => false,
             'container_schema' => EventPost()->list_shema['container'],
             'item_schema' => EventPost()->list_shema['item'],
+            'align' => '',
             'className' => '',
         ), 'shortcode_list'), $_atts);
         
@@ -196,7 +199,7 @@ class Shortcodes{
      *
      * @return string
      */
-    public function shortcode_timeline($_atts) {
+    public function shortcode_timeline($_atts, $content='', $block=null) {
         $atts = shortcode_atts(apply_filters('eventpost_params', array(
             // Filters
             'nb' => 0,
@@ -209,6 +212,7 @@ class Shortcodes{
             'tax_term' => '',
             'title' => '',
             // Display
+            'align' => '',
             'type' => 'div',
             'before_title' => '<h3>',
             'after_title' => '</h3>',
@@ -219,13 +223,18 @@ class Shortcodes{
             'container_schema' => EventPost()->timeline_shema['container'],
             'item_schema' => EventPost()->timeline_shema['item'],
             'className' => '',
+            'order' => 'ASC',
+            'separate_years' => false,
+            'separate_months' => false,
         ), 'shortcode_list'), $_atts);
+
+        $atts['className'] .= ' direction-'.$_atts['direction'];
 
         if ($atts['container_schema'] != EventPost()->timeline_shema['container'])
             $atts['container_schema'] = html_entity_decode($atts['container_schema']);
         if ($atts['item_schema'] != EventPost()->timeline_shema['item'])
             $atts['item_schema'] = html_entity_decode($atts['item_schema']);
-        return EventPost()->list_events($atts, 'event_timeline', 'shortcode');
+        return EventPost()->list_events($atts, 'event_timeline', $block ? 'block' :'shortcode');
     }
 
     /**
@@ -269,6 +278,7 @@ class Shortcodes{
             'tax_term' => '',
             'orderby' => 'meta_value',
             'order' => 'ASC',
+            'align' => '',
             'className' => '',
         );
             // UI options
@@ -312,6 +322,7 @@ class Shortcodes{
             'tax_name' => '',
             'tax_term' => '',
             'thumbnail' => '',
+            'align' => '',
             'className' => '',
         );
         $atts = shortcode_atts(apply_filters('eventpost_params', $defaults, 'shortcode_cal'), $_atts);

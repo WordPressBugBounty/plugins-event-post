@@ -5,6 +5,9 @@
   * @deprecated
   * @package event-post
   */
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
+
 class EventPost_Map extends WP_Widget {
     var $defaults;
    function __construct() {
@@ -237,7 +240,9 @@ class EventPost_Map extends WP_Widget {
         <p>
             <label for="<?php echo $this->get_field_id($int_key); ?>">
             <input id="<?php echo $this->get_field_id($int_key); ?>" name="<?php echo $this->get_field_name($int_key); ?>" type="checkbox" value="1" <?php checked($instance[$int_key], true , true); ?>/>
-            <?php printf(__('Activate %s interaction','event-post'), $int_name); ?>
+            <?php 
+            // Translators: %s is the interaction name
+            printf(__('Activate %s interaction','event-post'), $int_name); ?>
             </label>
         </p>
        <?php  endforeach; ?>

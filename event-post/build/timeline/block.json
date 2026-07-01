@@ -1,11 +1,18 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 2,
+  "apiVersion": 3,
   "name": "eventpost/timeline",
-  "version": "5.12.0",
+  "version": "6.0.0",
   "title": "Events Timeline",
   "icon": "arrow-right-alt",
   "category": "common",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false
+  },
   "attributes": {
     "nb": {
       "type": "number",
@@ -38,11 +45,35 @@
     "after_title": {
       "type": "string"
     },
+    "excerpt": {
+      "type": "boolean"
+    },
+    "order": {
+      "type": "string",
+      "default": "ASC"
+    },
+    "separate_years": {
+      "type": "boolean",
+      "default": false
+    },
+    "separate_months": {
+      "type": "boolean",
+      "default": false
+    },
+    "direction": {
+      "type": "string",
+      "default": "horizontal"
+    },
     "style": {
       "type": "string"
     },
-    "excerpt": {
-      "type": "boolean"
+    "size": {
+      "type": "number",
+      "default": 2
+    },
+    "color": {
+      "type": "string",
+      "default": "#000000"
     }
   },
   "textdomain": "eventpost",

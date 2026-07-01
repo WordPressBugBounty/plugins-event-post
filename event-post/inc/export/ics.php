@@ -3,9 +3,11 @@
  * ICS Export
  * 
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   5.4
  */
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
 
 if(isset($event->post_title) && isset($event->time_start) && isset($event->time_end) && isset($event->description) && isset($event->address) && isset($event->permalink)){
 	$gmt = $this->get_gmt_offset();

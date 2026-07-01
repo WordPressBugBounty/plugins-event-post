@@ -3,11 +3,13 @@
  * Settings
  *
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   5.4.0
  */
 
 namespace EventPost;
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
 
 class Settings{
 	private $dashicons;

@@ -3,11 +3,13 @@
  * Multisite management
  * 
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   4.3
  */
 
  namespace EventPost;
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
 
 if(is_multisite()){
     global $Multisite;

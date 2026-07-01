@@ -3,7 +3,7 @@
  * Currencies
  *
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   5.10.0
  */
 

@@ -3,10 +3,12 @@
  * Functions to register client-side assets (scripts and stylesheets) for the Gutenberg block.
  *
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   5.2
  * @see     https://wordpress.org/gutenberg/handbook/blocks/writing-your-first-block-type/#enqueuing-block-scripts
  */
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
 
  /**
  * Registers eventpost/list block

@@ -1,13 +1,17 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 2,
+  "apiVersion": 3,
   "name": "eventpost/calendar",
-  "version": "5.12.0",
+  "version": "6.0.0",
   "title": "Events Calendar",
   "category": "common",
   "icon": "calendar",
   "description": "Calendar of events",
   "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
     "html": false
   },
   "attributes": {

@@ -3,9 +3,11 @@
  * Do not call this file, just used for generating .pot file
  * 
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   5.2
  */
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
 
 exit();
 __('Filters', 'event-post');

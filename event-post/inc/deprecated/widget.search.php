@@ -3,6 +3,9 @@
  * @deprecated
  * @package event-post
  */
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
+
 class EventPost_Search extends WP_Widget {
     var $defaults;
    function __construct() {
@@ -64,6 +67,7 @@ class EventPost_Search extends WP_Widget {
             echo esc_html($instance['widgettitle']);
             if(!empty($instance['cat']) && $instance['feed']){
                 $rss_link = admin_url('admin-ajax.php') . '?action=EventPostFeed&cat=' . $instance['cat'];
+                // Translators: %s is the category name
                 echo' <a href="' . esc_url($rss_link) . '" title="'.esc_attr(sprintf(__('feed of %s', 'event-post'), $instance['cat'])).'"><span class="dashicons dashicons-rss"></span></a>';
             }
             echo wp_kses($args['after_title'], EventPost()->kses_tags);

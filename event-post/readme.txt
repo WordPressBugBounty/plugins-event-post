@@ -1,10 +1,10 @@
-# Event post
+# Event Post
 Contributors: bastho, leroysabrina, unecologeek, agencenous  
 Donate link: https://apps.avecnous.eu/en/product/eventpost/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=donate  
 Tags: calendar, events, booking, map, geolocation  
 Requires at least: 6.3  
 Tested up to: 7.0   
-Stable tag: 5.12.0   
+Stable tag: 6.0.0   
 Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=author  
 License: GPLv2  
 License URI: https://www.gnu.org/licenses/gpl-2.0.html  
@@ -241,6 +241,22 @@ You can also subscribe to paid plan, I don't care.
 4. Editor interface for location data
 ## Changelog
 
+### 6.0.0
+
+- Add align support on blocks
+- Improves Timeline:
+    - New vertical layout
+    - New "order" option
+    - Add gesture support
+    - Add time markers
+    - Use CSS vars
+- Improves Map:
+    - Split options in editor
+    - Ensure data are loaded before rendering map block
+- Security: Add direct file access protections
+- Add comments for translators
+- Update apiVersion to 3 in block declarations
+
 ### 5.12.0
 
 - More reliable interaction options in map block editor
@@ -389,6 +405,9 @@ Misc:
 
 
 ## Upgrade notice
+
+### 6.0.0
+* CSS class of event items are refactored: lowercase, removed overkilled prefixes
 
 ### 4.1.1
 Increases accessibility

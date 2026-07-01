@@ -4,6 +4,9 @@
   * @deprecated
   * @package event-post
   */
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
+
 class EventPost_Cal extends WP_Widget {
     var $defaults;
    function __construct() {

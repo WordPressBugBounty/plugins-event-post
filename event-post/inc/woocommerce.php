@@ -3,11 +3,13 @@
  * Support for WooCommerce
  *
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   5.8.0
  */
 
 namespace EventPost;
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
 
 \add_filter( 'woocommerce_product_tabs', '\EventPost\woocommerce_product_tabs' );
 \add_filter( 'event-post-rich-result', '\EventPost\woocommerce_rich_result', 10, 2 );

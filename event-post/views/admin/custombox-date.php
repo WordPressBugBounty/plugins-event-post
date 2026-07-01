@@ -3,9 +3,11 @@
  * Date custombox
  *
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   5.3.1
  */
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
 ?>
 <div class="eventpost-misc-pub-section">
   <p>

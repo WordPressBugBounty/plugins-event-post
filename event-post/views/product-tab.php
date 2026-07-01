@@ -4,9 +4,12 @@
  * Support for WooCommerce products
  *
  * @package event-post
- * @version 5.12.0
+ * @version 6.0.0
  * @since   5.8.0
  */
+
+if ( ! defined( 'ABSPATH' ) ) exit; 
+
 ?>
  <?php echo wp_kses(\EventPost()->get_singledate($event, 'single'), EventPost()->kses_tags); ?>
 
