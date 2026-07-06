@@ -3,7 +3,7 @@
  * Manage sub events
  * 
  * @package event-post
- * @version 6.0.0
+ * @version 6.0.1
  * @since   4.3
  */
 

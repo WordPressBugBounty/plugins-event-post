@@ -3,7 +3,7 @@
  * Implements all shortcodes features
  *
  * @package event-post
- * @version 6.0.0
+ * @version 6.0.1
  * @since   5.0.0
  */
 
@@ -202,7 +202,7 @@ class Shortcodes{
     public function shortcode_timeline($_atts, $content='', $block=null) {
         $atts = shortcode_atts(apply_filters('eventpost_params', array(
             // Filters
-            'nb' => 0,
+            'nb' => 3,
             'future' => true,
             'past' => false,
             'geo' => 0,
