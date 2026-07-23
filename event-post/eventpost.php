@@ -3,7 +3,7 @@
  * Plugin Name: Event Post
  * Plugin URI: https://event-post.com?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=plugin-uri
  * Description: Add calendar and/or geolocation metadata on any posts.
- * Version: 6.0.1
+ * Version: 6.1.0
  * Author: N.O.U.S. Open Useful and Simple
  * Contributors: bastho, sabrinaleroy, unecologeek, agencenous
  * Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=author
@@ -1685,6 +1685,9 @@ class EventPost {
 	$ep_settings = $this->settings;
 		$defaults = array(
 			'nb' => 0,
+			'nb_desktop' => 0,
+			'nb_tablet' => 0,
+			'nb_mobile' => 0,
 			'type' => 'div',
 			'future' => true,
 			'past' => false,
@@ -1729,7 +1732,7 @@ class EventPost {
 		}
 		$atts_old_nb = $defaults['nb'];
 		if($id == "event_timeline"){
-			$atts_old_nb = $atts['nb'];
+			$atts_old_nb = intval($atts['nb']);
 			$atts['nb'] = -1;
 		}
 
@@ -1744,7 +1747,7 @@ class EventPost {
 		$this->list_id++;
 		if (sizeof($events) > 0) {
 			if (!empty($title)) {
-				$ret .= esc_html($before_title) . esc_html($title) . esc_html($after_title);
+				$ret .= wp_kses_post($before_title . esc_html($title) . $after_title);
 			}
 
 			$type = in_array($type, ['div', 'ul', 'ol']) ? $type : 'div';
@@ -1766,7 +1769,11 @@ class EventPost {
 				if($atts_old_nb != 0){
 					$item_child_style = 'width : '.((100/$atts_old_nb) - 2).'%;';
 				}
-				$attributes .= ' data-nb="'.$atts_old_nb.'" data-filter="'.http_build_query($atts).'" ';
+				$attributes .= ' data-nb="'.$atts_old_nb.'"';
+			$attributes .= ' data-nb-desktop="'.intval($atts['nb_desktop'] ?? 0).'"';
+			$attributes .= ' data-nb-tablet="'.intval($atts['nb_tablet'] ?? 0).'"';
+			$attributes .= ' data-nb-mobile="'.intval($atts['nb_mobile'] ?? 0).'"';
+			$attributes .= ' data-filter="'.http_build_query($atts).'" ';
 			}
 
 			if($id === 'event_timeline'){
@@ -2729,10 +2736,10 @@ class EventPost {
 			// Translators: %s is the year
 			$ret.='</span><button data-date="' . date('Y-n', $next_year) . '" title="'.sprintf(__('Switch to %s', 'event-post'), date('Y', $next_year)).'" class="eventpost_cal_bt eventpost-cal-bt-next">&raquo;</button></span>';
 			// Translators: %s is the month name
-			$ret.='<span class="eventpost-cal-month"><button data-date="' . date('Y-n', $prev_month) . '" title="'.sprintf(__('Switch to %s', 'event-post'), date_i18n('F Y', $prev_month)).'" class="eventpost_cal_bt eventpost-cal-bt-prev">&laquo;</button><span class="eventpost-cal-header-text">';
+			$ret.='<span class="eventpost-cal-month"><button data-date="' . date('Y-n', $prev_month) . '" title="'.sprintf(__('Switch to %s', 'event-post'), date_i18n('F Y', $prev_month)).'" class="eventpost_cal_bt eventpost-cal-bt-prev eventpost-cal-bt-prev-month">&laquo;</button><span class="eventpost-cal-header-text">';
 			$ret.=$this->NomDuMois[abs($mois)];
 			// Translators: %s is the month name
-			$ret.='</span><button data-date="' . date('Y-n', $next_month) . '" title="'.sprintf(__('Switch to %s', 'event-post'), date_i18n('F Y', $next_month)).'" class="eventpost_cal_bt eventpost-cal-bt-next">&raquo;</button> </span>';
+			$ret.='</span><button data-date="' . date('Y-n', $next_month) . '" title="'.sprintf(__('Switch to %s', 'event-post'), date_i18n('F Y', $next_month)).'" class="eventpost_cal_bt eventpost-cal-bt-next eventpost-cal-bt-next-month">&raquo;</button> </span>';
 			$ret.='<span class="eventpost-cal-today"><button data-date="' . date('Y-n') . '" class="eventpost_cal_bt">' . __('Today', 'event-post') . '</button></span>';
 			$ret.='</div>';
 		}

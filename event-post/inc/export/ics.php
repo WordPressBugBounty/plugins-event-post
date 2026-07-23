@@ -3,7 +3,7 @@
  * ICS Export
  * 
  * @package event-post
- * @version 6.0.1
+ * @version 6.1.0
  * @since   5.4
  */
 

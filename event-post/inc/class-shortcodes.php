@@ -3,7 +3,7 @@
  * Implements all shortcodes features
  *
  * @package event-post
- * @version 6.0.1
+ * @version 6.1.0
  * @since   5.0.0
  */
 
@@ -203,6 +203,9 @@ class Shortcodes{
         $atts = shortcode_atts(apply_filters('eventpost_params', array(
             // Filters
             'nb' => 3,
+            'nb_desktop' => 0,
+            'nb_tablet' => 0,
+            'nb_mobile' => 0,
             'future' => true,
             'past' => false,
             'geo' => 0,
@@ -224,11 +227,16 @@ class Shortcodes{
             'item_schema' => EventPost()->timeline_shema['item'],
             'className' => '',
             'order' => 'ASC',
+            'direction' => 'horizontal',
             'separate_years' => false,
             'separate_months' => false,
+            'size' => 2,
+            'color' => '#000000',
         ), 'shortcode_list'), $_atts);
 
-        $atts['className'] .= ' direction-'.$_atts['direction'];
+        $atts['className'] .= ' direction-'.$atts['direction'];
+
+        wp_enqueue_script('event-post-timeline');
 
         if ($atts['container_schema'] != EventPost()->timeline_shema['container'])
             $atts['container_schema'] = html_entity_decode($atts['container_schema']);
@@ -319,6 +327,7 @@ class Shortcodes{
             'mondayfirst' => 0, // 1 : weeks starts on monday
             'display_title' => 0,
             'datepicker' => 1,
+            'swipe' => false,
             'tax_name' => '',
             'tax_term' => '',
             'thumbnail' => '',
@@ -332,6 +341,7 @@ class Shortcodes{
             'mondayfirst' => intval($atts['mondayfirst']),
             'display_title' => intval($atts['display_title']),
             'datepicker' => intval($atts['datepicker']),
+            'swipe' => intval($atts['swipe']),
             'tax_name' => sanitize_text_field($atts['tax_name']),
             'tax_term' => sanitize_text_field($atts['tax_term']),
             'thumbnail' => sanitize_text_field($atts['thumbnail']),
@@ -352,6 +362,7 @@ class Shortcodes{
                     data-mf="' . esc_attr($mondayfirst) . '"
                     data-dp="' . esc_attr($datepicker) . '"
                     data-title="'. esc_attr($display_title) .'"
+                    data-swipe="'. esc_attr($swipe) .'"
                 >'
             . wp_kses_post(EventPost()->calendar($atts))
         . '</div>';
