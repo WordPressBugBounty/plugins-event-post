@@ -3,7 +3,7 @@
  * VCS Export
  *
  * @package event-post
- * @version 6.1.0
+ * @version 6.1.1
  * @since   5.4
  */
 

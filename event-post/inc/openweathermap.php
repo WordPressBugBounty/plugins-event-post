@@ -3,7 +3,7 @@
  * Weather support
  * 
  * @package event-post
- * @version 6.1.0
+ * @version 6.1.1
  * @since   4.3.0
  */
 

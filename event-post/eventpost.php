@@ -3,7 +3,7 @@
  * Plugin Name: Event Post
  * Plugin URI: https://event-post.com?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=plugin-uri
  * Description: Add calendar and/or geolocation metadata on any posts.
- * Version: 6.1.0
+ * Version: 6.1.1
  * Author: N.O.U.S. Open Useful and Simple
  * Contributors: bastho, sabrinaleroy, unecologeek, agencenous
  * Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=author
@@ -1522,8 +1522,8 @@ class EventPost {
 			$datas_loc = $this->print_location($post, $context);
 			$classes = array(
 				'event_data',
-				'status-'.strtolower(str_replace('Event', '', $event->status)),
-				'location-type-'.strtolower(str_replace('EventAttendanceMode', '', $event->attendance_mode)),
+				'status-'.strtolower(str_replace('Event', '', $post->status)),
+				'location-type-'.strtolower(str_replace('EventAttendanceMode', '', $post->attendance_mode)),
 				$class
 			);
 			if ($datas_date != '' || $datas_loc != '') {
@@ -1782,13 +1782,15 @@ class EventPost {
 			}
 
 			foreach ($events as $event) {
-				if($previous_year && $previous_year !== date('Y', $event->time_start)){
-					$html.= '<div class="event-timeline-separator event-timeline-year"><span class="event-timeline-year-text">'.date_i18n('Y', $event->time_start).'</span></div>';
-					$previous_year = date('Y', $event->time_start);
-				}
-				if($previous_month && $previous_month !== date('Ym', $event->time_start)){
-					$html.= '<div class="event-timeline-separator event-timeline-month"><span class="event-timeline-month-text">'.date_i18n('F', $event->time_start).'</span>'.($previous_year ? '' : ' <span class="event-timeline-year-text">'.date_i18n('Y', $event->time_start).'</span>').'</div>';
-					$previous_month = date('Ym', $event->time_start);
+				if($id === 'event_timeline'){
+					if($previous_year && $previous_year !== date('Y', $event->time_start)){
+						$html.= '<div class="event-timeline-separator event-timeline-year"><span class="event-timeline-year-text">'.date_i18n('Y', $event->time_start).'</span></div>';
+						$previous_year = date('Y', $event->time_start);
+					}
+					if($previous_month && $previous_month !== date('Ym', $event->time_start)){
+						$html.= '<div class="event-timeline-separator event-timeline-month"><span class="event-timeline-month-text">'.date_i18n('F', $event->time_start).'</span>'.($previous_year ? '' : ' <span class="event-timeline-year-text">'.date_i18n('Y', $event->time_start).'</span>').'</div>';
+						$previous_month = date('Ym', $event->time_start);
+					}
 				}
 				$text_price = $this->get_price($event,true);
 				$class_item = array(
@@ -1888,7 +1890,7 @@ class EventPost {
 				if(!empty($align)){
 					$classes[] = 'align'.esc_attr($align);
 				}
-				if($previous_year || $previous_month){
+				if($id === 'event_timeline' && ($previous_year || $previous_month)){
 					$classes[] = 'has-time-separators';
 				}
 				$ret.=str_replace(
@@ -3205,11 +3207,14 @@ class EventPost {
 			$export_file = plugin_dir_path(__FILE__) . 'inc/export/' . $format . '.php';
 			if (is_numeric($event_id) && file_exists($export_file)) {
 				$event = $this->retreive($event_id);
+				if($event->post_status != 'publish'){
+					wp_die(esc_html__('Event not found.', 'event-post'), 404);
+				}
 				include $export_file;
 				exit;
 			}
 		}
-		wp_die(esc_html__('Invalid request.', 'event-post'));
+		wp_die(esc_html__('Invalid request.', 'event-post'), 400);
 	}
 	
 

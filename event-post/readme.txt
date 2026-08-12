@@ -1,10 +1,10 @@
 # Event Post
-Contributors: bastho, leroysabrina, unecologeek, agencenous  
+Contributors: agencenous, bastho, aureliefoucher, enzomangiante, leroysabrina, unecologeek   
 Donate link: https://apps.avecnous.eu/en/product/eventpost/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=donate  
 Tags: calendar, events, booking, map, geolocation  
 Requires at least: 6.3  
 Tested up to: 7.0   
-Stable tag: 6.1.0   
+Stable tag: 6.1.1   
 Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=author  
 License: GPLv2  
 License URI: https://www.gnu.org/licenses/gpl-2.0.html  
@@ -74,8 +74,8 @@ The plugin comes with several blocks/shortcodes which allows to:
 * **tax_name=''** *(string, custom taxonomy name)*
 * **tax_term=''** *(string, the term for above taxonomy)*
 * **geo=0** *(boolean, retreives or not, only events which have geolocation informations, default=0)*
-* **order="ASC"** *(string (can be "ASC" or "DESC")*
-* **orderby="meta_value"** *(string (if set to "meta_value" events are sorted by event date, possible values are native posts fields : "post_title","post_date" etc...)*
+* **order="ASC"** *(string, can be "ASC" or "DESC")*
+* **orderby="meta_value"** *(string, if set to "meta_value" events are sorted by event date, possible values are native posts fields : "post_title","post_date" etc...)*
 
 #### Display parameters
 
@@ -85,8 +85,8 @@ The plugin comes with several blocks/shortcodes which allows to:
 * **style=''** *(String, add some inline CSS to the list wrapper)*
 * **type="div"** *(string, possible values are : div, ul, ol default=div)*
 * **title=''** *(string, hidden if no events is found)*
-* **before_title='&lt;h3&gt;'** *(string (default &lt;h3&gt;)*
-* **after_title='&lt;/h3&gt;'** *(string (default &lt;/h3&gt;)*
+* **before_title='&lt;h3&gt;'** *(string, default &lt;h3&gt;)*
+* **after_title='&lt;/h3&gt;'** *(string, default &lt;/h3&gt;)*
 * **container_schema=''** *(string html schema to display list)*
 * **item_schema=''** *(string html schema to display item)*
 
@@ -129,10 +129,10 @@ item_schema default value:
 * **tax_name=''** *(string, custom taxonomy name)*
 * **tax_term=''** *(string, the term for above taxonomy)*
 * **tile=''** *(string (default@osm.org, OpenCycleMap, mapquest, osmfr, 2u, satelite, toner), sets the map background, default=default@osm.org)*
-* **title=''** *(string (default)*
-* **zoom=''** *(number or empty (default, means fit to points)*
-* **before_title='&lt;h3&gt;';** *(string (default &lt;h3&gt;)*
-* **after_title='&lt;/h3&gt;'** *(string (default &lt;/h3&gt;)**
+* **title=''** *(string, default)*
+* **zoom=''** *(number or empty, default, means fit to points)*
+* **before_title='&lt;h3&gt;';** *(string, default &lt;h3&gt;)*
+* **after_title='&lt;/h3&gt;'** *(string, default &lt;/h3&gt;)**
 * **thumbnail=''** * (Bool, default:false, used to display posts thumbnails)*
 * **excerpt=''** *(Bool, default:false, used to display posts excerpts)*
 * **list=''** *(String ("false", "above", "below", "right", "left") default: "false", Display a list of posts)*
@@ -146,9 +146,9 @@ example:
 ### [events_cal]
 
 * **cat=''** *(string, select posts only from the selected category, default=null, for all categories)*
-* **date=''** *(string, date for a month. Absolutly : 2013-9 or relatively : -1 month, default is empty, current month*
+* **date=''** *(string, date for a month. Absolutly : 2013-9 or relatively : -1 month, default is empty, current month)*
 * **datepicker=1** *(boolean, displays or not a date picker)*
-* **mondayfirst=0** *(boolean, weeks start on monday, default is 0 (sunday)*
+* **mondayfirst=0** *(boolean, weeks start on monday, default is 0 sunday)*
 * **display_title=0** *(boolean, displays or not events title under the day number)*
 * **tax_name=''** *(string, custom taxonomy name)*
 * **tax_term=''** *(string, the term for above taxonomy)*
@@ -240,6 +240,12 @@ You can also subscribe to paid plan, I don't care.
 3. Editor interface for event data
 4. Editor interface for location data
 ## Changelog
+
+### 6.1.1
+
+- Check for event status in export - Reported by Que Thanh Tuan
+- Add HTTP code in export error
+- Fix warning about variable references
 
 ### 6.1.0
 

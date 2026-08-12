@@ -3,7 +3,7 @@
  * Manage sub events
  * 
  * @package event-post
- * @version 6.1.0
+ * @version 6.1.1
  * @since   4.3
  */
 
@@ -309,7 +309,7 @@ class Children{
      * Shows notices
      */
     function notice(){
-        if(false === $notice = filter_input(INPUT_GET, 'eventpost_child_notice')){
+        if(false == $notice = filter_input(INPUT_GET, 'eventpost_child_notice')){
             return;
         }
         $notices = array(
