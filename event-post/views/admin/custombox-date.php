@@ -3,7 +3,7 @@
  * Date custombox
  *
  * @package event-post
- * @version 6.1.1
+ * @version 6.1.2
  * @since   5.3.1
  */
 

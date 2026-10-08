@@ -3,7 +3,7 @@
  * Plugin Name: Event Post
  * Plugin URI: https://event-post.com?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=plugin-uri
  * Description: Add calendar and/or geolocation metadata on any posts.
- * Version: 6.1.1
+ * Version: 6.1.2
  * Author: N.O.U.S. Open Useful and Simple
  * Contributors: bastho, sabrinaleroy, unecologeek, agencenous
  * Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=author
@@ -44,10 +44,13 @@ function event_post_get_all_terms($post_id){
 class EventPost {
 	/**
 	 * The current version
-	 * 
-	 * @var array
+	 *
+	 * Must be kept in sync with the `Version:` plugin header above: `bin/bump`
+	 * only rewrites header-style declarations, not this literal.
+	 *
+	 * @var string
 	 */
-	public $version = '5.9.2';
+	public $version = '6.1.2';
 
 	// --------------------------------------------------------------------------------
 	// Post metas
@@ -2500,7 +2503,7 @@ class EventPost {
 	 * @return void
 	 */
 	function inline_save(){
-		$post_id = filter_input(INPUT_POST, 'post_ID', FILTER_SANITIZE_NUMBER_INT);
+		$post_id = absint(filter_input(INPUT_POST, 'post_ID', FILTER_SANITIZE_NUMBER_INT));
 		$this->save_postdata($post_id);
 	}
 	/**
@@ -2515,7 +2518,12 @@ class EventPost {
 			return;
 		}
 
-		if (!wp_verify_nonce(filter_input(INPUT_POST, 'eventpost_nonce'), plugin_basename(__FILE__))){
+		if (!wp_verify_nonce((string) filter_input(INPUT_POST, 'eventpost_nonce'), plugin_basename(__FILE__))){
+			return;
+		}
+
+		$post_id = absint($post_id);
+		if (!$post_id || !current_user_can('edit_post', $post_id)) {
 			return;
 		}
 

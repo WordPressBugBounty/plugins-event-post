@@ -3,8 +3,8 @@ Contributors: agencenous, bastho, aureliefoucher, enzomangiante, leroysabrina, u
 Donate link: https://apps.avecnous.eu/en/product/eventpost/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=donate  
 Tags: calendar, events, booking, map, geolocation  
 Requires at least: 6.3  
-Tested up to: 7.0   
-Stable tag: 6.1.1   
+Tested up to: 7.1   
+Stable tag: 6.1.2   
 Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=author  
 License: GPLv2  
 License URI: https://www.gnu.org/licenses/gpl-2.0.html  
@@ -240,6 +240,13 @@ You can also subscribe to paid plan, I don't care.
 3. Editor interface for event data
 4. Editor interface for location data
 ## Changelog
+
+### 6.1.2
+
+- Fix ability of logged-in users to create child events on posts they aren't allowed edit - Reported by Ananda Dhakal
+- Fix ability of logged-in users to delete posts without checking permissions - Reported by genisis-lab
+- Tested up to WP 7.1
+- Keep the internal version number in sync with the plugin header
 
 ### 6.1.1
 

@@ -3,7 +3,7 @@
  * Manage sub events
  * 
  * @package event-post
- * @version 6.1.1
+ * @version 6.1.2
  * @since   4.3
  */
 
@@ -54,6 +54,7 @@ class Children{
         }
 
         add_filter('eventpost_retreive', array(&$this, 'retreive'));
+        add_filter('eventpost_get_items', array(&$this, 'hide_children_of_unpublished'));
         add_filter('eventpost_get_post_types', array(&$this, 'get_post_types'));
         add_filter('eventpost_contentbar', array(&$this, 'display_single'), 3, 2);
 
@@ -178,7 +179,11 @@ class Children{
      * @return bool
      */
     function _delete_child($child_id){
-        return wp_delete_post( $child_id, true );
+        $child = get_post($child_id);
+        if(!$child || $child->post_type !== $this->POST_TYPE){
+            return false;
+        }
+        return wp_delete_post( $child->ID, true );
     }
 
     /**
@@ -214,15 +219,19 @@ class Children{
         if(!is_numeric($post_id)){
             return false;
         }
+        $parent = get_post($post_id);
+        if(!$parent || $parent->post_type === $this->POST_TYPE){
+            return false;
+        }
 
         $id = wp_insert_post(array(
             'post_type'=>$this->POST_TYPE,
-            'post_parent'=>$post_id,
+            'post_parent'=>$parent->ID,
             'post_status'=>'publish',
             'post_mime_type'=>'text/calendar',
         ));
 
-        if(!is_numeric($id)){
+        if(!is_numeric($id) || !$id){
             return false;
         }
         if ($EventPost->settings['children_sync_tax']) {
@@ -292,14 +301,38 @@ class Children{
     function retreive($event){
         global $EventPost;
         if($event->post_type == $this->POST_TYPE && $event->post_parent){
-            $parent = $EventPost->retreive($event->post_parent);
             $event->root_ID = $event->post_parent;
+            $parent_status = get_post_status($event->post_parent);
+            if(!$parent_status || !is_post_status_viewable($parent_status)){
+                $event->post_status = $parent_status ? $parent_status : 'private';
+                return $event;
+            }
+            $parent = $EventPost->retreive($event->post_parent);
             $event->post_title = $parent->post_title;
             $event->permalink = $parent->permalink;
-            $event->post_content = $parent->post_content;
-            $event->description = $parent->description;
+            if(empty($parent->post_password)){
+                $event->post_content = $parent->post_content;
+                $event->description = $parent->description;
+            }
         }
         return $event;
+    }
+
+    /**
+     * Removes from public lists the children whose parent is not publicly readable
+     *
+     * @param array $events
+     *
+     * @return array
+     */
+    function hide_children_of_unpublished($events){
+        if(!is_array($events)){
+            return $events;
+        }
+        $post_type = $this->POST_TYPE;
+        return array_values(array_filter($events, function($event) use ($post_type){
+            return !(is_object($event) && $event->post_type === $post_type && $event->post_status !== 'publish');
+        }));
     }
 
 
@@ -328,21 +361,65 @@ class Children{
     }
 
     function check_admin_legitimity(){
-        if (!wp_verify_nonce(filter_input(INPUT_GET, 'eventpost_children_nonce'), 'eventpost_children_nonce') ){
-            wp_die(esc_html__('Invalid link', 'event-post'));
+        if (!wp_verify_nonce((string) filter_input(INPUT_GET, 'eventpost_children_nonce'), 'eventpost_children_nonce') ){
+            wp_die(esc_html__('Invalid link', 'event-post'), '', array('response' => 403));
     	}
     }
 
     /**
+     * Checks that the current user is allowed to add children to a post
+     *
+     * @param int $post_id
+     *
+     * @return bool
+     */
+    function can_add_child($post_id){
+        $post_id = absint($post_id);
+        return $post_id > 0 && get_post($post_id) && current_user_can('edit_post', $post_id);
+    }
+
+    /**
+     * Checks that the current user is allowed to delete a child of a post
+     *
+     * @param int $post_id
+     * @param int $child_id
+     *
+     * @return bool
+     */
+    function can_delete_child($post_id, $child_id){
+        $child = get_post(absint($child_id));
+        return $child
+            && $child->post_type === $this->POST_TYPE
+            && (int) $child->post_parent === absint($post_id)
+            && current_user_can('edit_post', $child->post_parent)
+            && current_user_can('delete_post', $child->ID);
+    }
+
+    /**
+     * Checks nonce for AJAX requests and answers in JSON on failure
+     *
+     * @return void
+     */
+    function check_ajax_legitimity(){
+        if (!check_ajax_referer('eventpost_children_nonce', 'eventpost_children_nonce', false)) {
+            wp_send_json(array('success'=>false, 'message'=>__('Invalid link', 'event-post')), 403);
+        }
+    }
+
+    /**
      * Triggers child add on form submission
-     * 
+     *
      * @return void
      */
     function add_child_admin_post(){
         $this->check_admin_legitimity();
 
-        if(false === $post_id = filter_input(INPUT_GET, 'post_id', FILTER_SANITIZE_NUMBER_INT)){
+        $post_id = absint(filter_input(INPUT_GET, 'post_id', FILTER_SANITIZE_NUMBER_INT));
+        if(!$post_id){
             wp_die(esc_html__('No post ID given...', 'event-post'));
+        }
+        if(!$this->can_add_child($post_id)){
+            wp_die(esc_html__('Sorry, you are not allowed to edit this item.', 'event-post'), '', array('response' => 403));
         }
 
         if(false !== $child_id = $this->_add_child($post_id)){
@@ -354,8 +431,14 @@ class Children{
         exit;
     }
     function add_child_ajax(){
-        if(false === $post_id = filter_input(INPUT_GET, 'post_id', FILTER_SANITIZE_NUMBER_INT)){
-            wp_die(__('No post ID given...', 'event-post'));
+        $this->check_ajax_legitimity();
+
+        $post_id = absint(filter_input(INPUT_GET, 'post_id', FILTER_SANITIZE_NUMBER_INT));
+        if(!$post_id){
+            wp_send_json(array('success'=>false, 'message'=>__('No post ID given...', 'event-post')), 400);
+        }
+        if(!$this->can_add_child($post_id)){
+            wp_send_json(array('success'=>false, 'message'=>__('Sorry, you are not allowed to edit this item.', 'event-post')), 403);
         }
 
         if(false !== $child_id = $this->_add_child($post_id)){
@@ -375,20 +458,47 @@ class Children{
 
     function delete_child_admin_post(){
         $this->check_admin_legitimity();
-        if(false === $post_id = filter_input(INPUT_GET, 'post_id', FILTER_SANITIZE_NUMBER_INT)){
+        $post_id = absint(filter_input(INPUT_GET, 'post_id', FILTER_SANITIZE_NUMBER_INT));
+        if(!$post_id){
             wp_die(esc_html__('No post ID given...', 'event-post'));
         }
-        if(false === $child_id = filter_input(INPUT_GET, 'child_id', FILTER_SANITIZE_NUMBER_INT)){
+        $child_id = absint(filter_input(INPUT_GET, 'child_id', FILTER_SANITIZE_NUMBER_INT));
+        if(!$child_id){
             wp_die(esc_html__('No child ID given...', 'event-post'));
         }
+        if(!$this->can_delete_child($post_id, $child_id)){
+            wp_die(esc_html__('Sorry, you are not allowed to delete this item.', 'event-post'), '', array('response' => 403));
+        }
 
-        if(false !== $this->_delete_child($child_id)){
+        if($this->_delete_child($child_id)){
             wp_redirect(admin_url('post.php?post='.$post_id.'&action=edit&eventpost_child_notice=delete_success'));
         }
         else{
             wp_redirect(admin_url('post.php?post='.$post_id.'&action=edit&eventpost_child_notice=delete_failed'));
         }
         exit;
+    }
+
+    /**
+     * Deletes a child event from an AJAX request
+     *
+     * @return void
+     */
+    function delete_child_ajax(){
+        $this->check_ajax_legitimity();
+
+        $post_id = absint(filter_input(INPUT_GET, 'post_id', FILTER_SANITIZE_NUMBER_INT));
+        $child_id = absint(filter_input(INPUT_GET, 'child_id', FILTER_SANITIZE_NUMBER_INT));
+        if(!$post_id || !$child_id){
+            wp_send_json(array('success'=>false, 'message'=>__('No child ID given...', 'event-post')), 400);
+        }
+        if(!$this->can_delete_child($post_id, $child_id)){
+            wp_send_json(array('success'=>false, 'message'=>__('Sorry, you are not allowed to delete this item.', 'event-post')), 403);
+        }
+
+        wp_send_json(array(
+            'success'=>(bool) $this->_delete_child($child_id),
+        ));
     }
 
     /**

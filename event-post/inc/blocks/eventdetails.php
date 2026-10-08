@@ -3,7 +3,7 @@
  * Functions to register client-side assets (scripts and stylesheets) for the Gutenberg block.
  *
  * @package event-post
- * @version 6.1.1
+ * @version 6.1.2
  * @since   5.2
  * @see     https://wordpress.org/gutenberg/handbook/blocks/writing-your-first-block-type/#enqueuing-block-scripts
  */
