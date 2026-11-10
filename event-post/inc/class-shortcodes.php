@@ -3,7 +3,7 @@
  * Implements all shortcodes features
  *
  * @package event-post
- * @version 6.1.2
+ * @version 6.1.3
  * @since   5.0.0
  */
 
@@ -238,10 +238,14 @@ class Shortcodes{
 
         wp_enqueue_script('event-post-timeline');
 
-        if ($atts['container_schema'] != EventPost()->timeline_shema['container'])
+        if ($atts['container_schema'] != EventPost()->timeline_shema['container']) {
             $atts['container_schema'] = html_entity_decode($atts['container_schema']);
-        if ($atts['item_schema'] != EventPost()->timeline_shema['item'])
+            $atts['container_schema'] = wp_kses($atts['container_schema'], EventPost()->kses_tags);
+        }
+        if ($atts['item_schema'] != EventPost()->timeline_shema['item']) {
             $atts['item_schema'] = html_entity_decode($atts['item_schema']);
+            $atts['item_schema'] = wp_kses($atts['item_schema'], EventPost()->kses_tags);
+        }
         return EventPost()->list_events($atts, 'event_timeline', $block ? 'block' :'shortcode');
     }
 

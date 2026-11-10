@@ -3,8 +3,8 @@ Contributors: agencenous, bastho, aureliefoucher, enzomangiante, leroysabrina, u
 Donate link: https://apps.avecnous.eu/en/product/eventpost/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=donate  
 Tags: calendar, events, booking, map, geolocation  
 Requires at least: 6.3  
-Tested up to: 7.1   
-Stable tag: 6.1.2   
+Tested up to: 7.2   
+Stable tag: 6.1.3   
 Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=wp-repo&mtm_source=author  
 License: GPLv2  
 License URI: https://www.gnu.org/licenses/gpl-2.0.html  
@@ -240,6 +240,11 @@ You can also subscribe to paid plan, I don't care.
 3. Editor interface for event data
 4. Editor interface for location data
 ## Changelog
+
+### 6.1.3
+
+- Fix Cross-Site Scripting (XSS): event colors are now validated as hexadecimal values, event titles, links and shortcode attributes are escaped, and custom timeline schemas are filtered
+- Tested up to WP 7.2
 
 ### 6.1.2
 

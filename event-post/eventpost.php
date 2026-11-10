@@ -3,7 +3,7 @@
  * Plugin Name: Event Post
  * Plugin URI: https://event-post.com?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=plugin-uri
  * Description: Add calendar and/or geolocation metadata on any posts.
- * Version: 6.1.2
+ * Version: 6.1.3
  * Author: N.O.U.S. Open Useful and Simple
  * Contributors: bastho, sabrinaleroy, unecologeek, agencenous
  * Author URI: https://apps.avecnous.eu/?mtm_campaign=wp-plugin&mtm_kwd=event-post&mtm_medium=dashboard&mtm_source=author
@@ -26,8 +26,18 @@ function EventPost(){
 	global $EventPost;
 	return $EventPost;
 }
+/**
+ * Hexadecimal color without its leading "#", or an empty string when the value is not a color.
+ *
+ * Every color printed by the plugin goes through here, so a stored value that is
+ * not a hex color can never reach a style or data attribute.
+ *
+ * @param mixed $color
+ * @return string
+ */
 function event_post_format_color($color){
-	return str_replace('#', '', $color);
+	$color = ltrim(trim((string) $color), '#');
+	return preg_match('/^[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?$/', $color) ? $color : '';
 }
 function event_post_get_all_terms($post_id){
 	$taxonomies= get_taxonomies('','names');
@@ -1531,7 +1541,7 @@ class EventPost {
 			);
 			if ($datas_date != '' || $datas_loc != '') {
 				$rgb = $this->hex2dec($post->color);
-				return '<div class="' . implode(' ', $classes) . '" style="border-left-color:#' . $post->color . ';background:rgba(' . $rgb['R'] . ',' . $rgb['G'] . ',' . $rgb['B'] . ',0.1)" itemscope itemtype="http://microformats.org/profile/hcard">'
+				return '<div class="' . implode(' ', $classes) . '" style="border-left-color:#' . esc_attr($post->color) . ';background:rgba(' . (int) $rgb['R'] . ',' . (int) $rgb['G'] . ',' . (int) $rgb['B'] . ',0.1)" itemscope itemtype="http://microformats.org/profile/hcard">'
 						. apply_filters('eventpost_get_single', $datas_date . $datas_cat . $datas_loc, $post)
 						. '</div>';
 			}
@@ -1776,7 +1786,7 @@ class EventPost {
 			$attributes .= ' data-nb-desktop="'.intval($atts['nb_desktop'] ?? 0).'"';
 			$attributes .= ' data-nb-tablet="'.intval($atts['nb_tablet'] ?? 0).'"';
 			$attributes .= ' data-nb-mobile="'.intval($atts['nb_mobile'] ?? 0).'"';
-			$attributes .= ' data-filter="'.http_build_query($atts).'" ';
+			$attributes .= ' data-filter="'.esc_attr(http_build_query($atts)).'" ';
 			}
 
 			if($id === 'event_timeline'){
@@ -1830,10 +1840,10 @@ class EventPost {
 						)), apply_filters('eventpost_item_scheme_values', array(
 					$child,
 					implode(' ', $class_item),
-					$this->get_post_color($event->ID, $this->settings['default_color'],true),
-					$event->permalink,
+					esc_attr($this->get_post_color($event->ID, $this->settings['default_color'],true)),
+					esc_url($event->permalink),
 					$thumbnail == true ? '<span class="event_thumbnail_wrap">' . get_the_post_thumbnail($event->root_ID, !empty($thumbnail_size) ? $thumbnail_size : 'thumbnail', array('class' => 'attachment-thumbnail wp-post-image event_thumbnail')) . '</span>' : '',
-					$event->post_title,
+					esc_html($event->post_title),
 					$event->post_type == 'product' ? $text_price : '',
 					$this->get_singledate($event, '', $context),
 					$this->get_singlecat($event, '', $context),
@@ -2527,9 +2537,13 @@ class EventPost {
 			return;
 		}
 
-		// Clean color or no color
+		// Only a hexadecimal color (with or without "#") is stored, anything else clears the color.
 		if (false !== $color = filter_input(INPUT_POST, $this->META_COLOR)) {
-			update_post_meta($post_id, $this->META_COLOR, sanitize_text_field($color));
+			$clean_color = sanitize_hex_color(trim((string) $color));
+			if (null === $clean_color) {
+				$clean_color = sanitize_hex_color_no_hash(trim((string) $color));
+			}
+			update_post_meta($post_id, $this->META_COLOR, (string) $clean_color);
 		}
 		// Clean color or no color
 		if (false !== $icon = filter_input(INPUT_POST, $this->META_ICON)) {
